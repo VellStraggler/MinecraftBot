@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="levelTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-06-29T06:32:27" hostname="DAVIDS_VOSSY" time="0.009">
+  <properties/>
+  <testcase name="levelOneTest()" classname="levelTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
