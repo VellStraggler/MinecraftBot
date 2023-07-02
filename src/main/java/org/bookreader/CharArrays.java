@@ -1,12 +1,15 @@
 package org.bookreader;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CharArrays {
 
     public static final int HEIGHT = 8;
     public static final int WIDTH = 5;
+    private static final String SORTED_CHARACTERS = "etoansihrldumyg.wcI,fkpbv?jHWTMAS-'xNqzYOBRDCJPELG:2F0U513!4V;*86QK7)(%~`@#$^&9_+=[{]}\\|ZX<>/";
 
     // vars for typing shortcuts
     private static final boolean f = false;
@@ -143,6 +146,12 @@ public class CharArrays {
             '#','$','^','&','9','_','+','=','[','{',']','}','\\','|','Z','X','<','>','/',};
     private static final Map<Character,Integer> charIndexMap = getCharIndexMap();
 
+    public static boolean[][][] getAll() {
+        return charBools;
+    }
+    public static char[] getAllChars() {
+        return SORTED_CHARACTERS.toCharArray();
+    }
     public static Map<Character,Integer> getCharIndexMap() {
         if (charIndexMap == null) {
             Map<Character, Integer> cim = new HashMap<>();
@@ -152,10 +161,13 @@ public class CharArrays {
             return cim;
         } else return charIndexMap;
     }
-    public static boolean[][] getChar(char c) {
+    public static boolean[][] getArray(char c) {
         return charBools[charIndexMap.get(c)];
     }
 
+    public static String toString(char c) {
+        return toString(getArray(c));
+    }
     public static String toString(boolean[][] c) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < HEIGHT; i++) {
