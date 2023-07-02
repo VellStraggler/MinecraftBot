@@ -18,13 +18,13 @@ public class BookReader {
         // await command to begin
         // /readbook bookName
         // Wait for a slash
-        while(!key.isPressed("/")) {
-            Thread.sleep(10);
-        }
-        while() {
-            if(command.equals("readbook\n")) {
-                re
-            } else break;
+//        while(!key.isPressed("/")) {
+//            Thread.sleep(10);
+//        }
+        while(true) {
+//            if(command.equals("readbook\n")) {
+//
+//            } else break;
 
             Book book = new Book();
             book.setTitle("");

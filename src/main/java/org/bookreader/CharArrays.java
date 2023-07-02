@@ -138,8 +138,8 @@ public class CharArrays {
             exclam,four,V,semic,star,eight,six,Q,K,seven,rightP,leftP,percent,curl,grave,at,pound,dollar,up,ampersand,
             nine,under,plus,equals,leftB,leftC,rightB,rightC,backslash,line,Z,X,left,right,fSlash};
     private static final char[] chars = {'e','t','o','a','n','s','i','h','r','l','d','u','m','y','g','.','w','c','I',',',
-            'f','k','p','b','v','?','j','H','W','T','M','A','S','-','x','N','q','z','Y','O','B','R','D','C','J','P','E',
-            'L','G',':','2','F','0','U','5','1','3','!','4','V','\'',';','*','8','6','Q','K','7',')','(','%','~','`','@',
+            'f','k','p','b','v','?','j','H','W','T','M','A','S','-','\'','x','N','q','z','Y','O','B','R','D','C','J','P','E',
+            'L','G',':','2','F','0','U','5','1','3','!','4','V',';','*','8','6','Q','K','7',')','(','%','~','`','@',
             '#','$','^','&','9','_','+','=','[','{',']','}','\\','|','Z','X','<','>','/',};
     private static final Map<Character,Integer> charIndexMap = getCharIndexMap();
 
