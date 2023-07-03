@@ -46,6 +46,19 @@ public class CharRecognition {
         }
         return ' ';
     }
+    public static char recognizeRisk(boolean[][] array, boolean surelyDigit) {
+        if (surelyDigit) {
+            return getDigit(array);
+        } else {
+            char[] level = getLevel(array);
+            for(char cInLevel: level){
+                if (CharArrays.riskyCompare(array, CharArrays.getArray(cInLevel))) {
+                    return cInLevel;
+                }
+            }
+        }
+        return ' ';
+    }
     public static char recognize(boolean[][] array) {
         return recognize(array, false);
     }

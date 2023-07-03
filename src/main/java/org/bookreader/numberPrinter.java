@@ -6,13 +6,49 @@ import static java.lang.System.currentTimeMillis;
 import static org.bookreader.CharRecognition.recognize;
 
 public class numberPrinter {
-    public static void main(String[] args) {
-        for(char c: CharArrays.getAllChars()) {
-            System.out.println("    " + c + "\n" + CharArrays.toString(c));
+    public static void efficiencyTest(String[] args) {
+        int time = 100000000;
+        char[] digs = {'0','1','2','3','4','5','6','7','8','9'};
+        long timeA = System.currentTimeMillis();
+        for(int i = 0; i < time; i++) {
+            for (char c: digs) {
+                boolean[][] array = CharArrays.getArray(c);
+                CharRecognition.recognize(array, true);
+            }
+        }
+        long timeB = System.currentTimeMillis();
+        for(int i = 0; i < time; i ++) {
+            for (char c: digs) {
+                boolean[][] array = CharArrays.getArray(c);
+                CharRecognition.recognizeRisk(array, false);
+            }
+        }
+        System.out.println((timeB - timeA) + " compared to risk: " + (System.currentTimeMillis() - timeB));
+    }
+    public static void getCoordUses(String[] args) {
+        int[][] counts = new int[8][];
+        for(int i = 0; i < counts.length; i++) {
+            counts[i] = new int[5];
+        }
+        for(char chr: CharArrays.getAllChars()) {
+            boolean[][] array = CharArrays.getArray(chr);
+            for(int r = 0; r < array.length;r++) {
+                for (int c = 0; c < array[0].length; c++) {
+                    if(array[r][c]) counts[r][c] += 1;
+                }
+            }
+        }
+        for(int[] row: counts) {
+            System.out.println();
+            for(int i: row) {
+                if (i < 10) {
+                    System.out.print('0');
+                }
+                System.out.print(i + " ");
+            }
         }
 
     }
-    // TODO: write a program that finds the best encoding for these 10 digits
     public static void omain(String[] args) {
         // step 1: ignore coordinates that have duplicate sets of digits that share it
         List<Point> points = new ArrayList<>();
@@ -67,15 +103,6 @@ public class numberPrinter {
                 System.out.println("\n" + points);
             }
         }
-        //
-
-
-
-
-        // step 3: search for the smallest number of nested loops to remove all digits (our goal is 4)
-        // step 4: store these points for use in quickly reading digits
-        // step 5: Make a version of this for all characters
-
         // Note: Capital letters are most likely found at the start of a line or sentence (after a period)
         // Note: Special characters are most likely found only on page 1 (except for dashes, commas, periods, and apostrophes)
     }

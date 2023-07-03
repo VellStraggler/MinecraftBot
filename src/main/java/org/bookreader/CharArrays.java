@@ -111,7 +111,7 @@ public class CharArrays {
     public static final boolean[][] leftP = {nb(f,f,t),nb(f,t),nb(),nb(),nb(),nb(f,t),nb(f,f,t),fs()};
     public static final boolean[][] percent = {walls(), {t,f,f,t,f},{f,f,f,t,f},nb(f,f,t),nb(f,t),{f,t,f,f,t},walls(),fs()};
     // special case, column 6 is ignored
-    public static final boolean[][] curl = {{f,t,t,f,f,t},{t,f,f,t,t,f},fs(),fs(),fs(),fs(),fs(),fs()};
+    public static final boolean[][] curl = {{f,t,t,f,f},{t,f,f,t,t},fs(),fs(),fs(),fs(),fs(),fs()};
     public static final boolean[][] grave = {nb(),nb(f,t),fs(),fs(),fs(),fs(),fs(),fs(),fs()};
     // special case, @ has a width of 6, so we ignore the last column
     public static final boolean[][] at = {fs(),{f,t,t,t,t},nb(),nb(t,f,t,t),nb(t,f,t),nb(t,f,t,t,t),nb(),{f,t,t,t,t}};
@@ -186,6 +186,29 @@ public class CharArrays {
     public static boolean compare(boolean[][] array, boolean[][] otherArray) {
         for (int r = 0; r < HEIGHT; r++) {
             for (int c = 0; c < WIDTH; c++) {
+                if (array[r][c] != otherArray[r][c]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * This comparison skips every other row and column, but still checks
+     * (3, 3) and (3, 2). It appears to be correct for the 93 acceptable characters.
+     * This makes it 1.6 times faster than regular compare().
+     * It is still 9 times slower than a knownDigit compare.
+     * @param array
+     * @param otherArray
+     * @return
+     */
+    public static boolean riskyCompare(boolean[][] array, boolean[][] otherArray) {
+        if (array[3][3] != otherArray[3][3] || array[3][2] != otherArray[3][2]) {
+            return false;
+        }
+        for (int r = 0; r < HEIGHT; r+=2) {
+            for (int c = 0; c < WIDTH; c+=2) {
                 if (array[r][c] != otherArray[r][c]) {
                     return false;
                 }
