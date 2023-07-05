@@ -1,9 +1,5 @@
 package org.bookreader;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This recognizes 93 particular characters based on the text font found in the game Minecraft.
  * This font is stored as a 2D array of booleans
@@ -17,10 +13,10 @@ public class CharRecognition {
     //public static final char[] levelOne = "eonihrldumywckpbHWMANOBRDCPELGF0U6QK@[|".toCharArray();
     // contains 1,2 | len 18
     private static final char[] levelTwo = "tasdgIfSqz54#={}\\<".toCharArray();
-    // contains 0,7 | len 5
-    private static final char[] levelThree = "y,j;_".toCharArray();
+    // contains 1,7 | len 5
+    private static final char[] levelThree = "yj_".toCharArray();
     // contains 0,6 | len 13
-    private static final char[] levelFour = ".x:21!)%]ZX>/".toCharArray();
+    private static final char[] levelFour = ",;.x:21!)%]ZX>/".toCharArray();
     // contains 2,6 | len 12
     private static final char[] levelFive = "v?TYJ3V87$&9".toCharArray();
     // what's left  | len 8
@@ -97,7 +93,7 @@ public class CharRecognition {
             } else return levelOneTwo;
         } else if (array[2][1]) {
             return levelTwo;
-        } else if (array[7][0]) {
+        } else if (array[7][1]) {
             return levelThree;
         } else if (array[6][0]) {
             return levelFour;

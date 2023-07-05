@@ -65,7 +65,9 @@ public class CharArrays {
     public static final boolean[][] b = {nb(),nb(),nb(t,f,t,t),nb(t,t,f,f,t),walls(),walls(),nb(4),blank()};
     public static final boolean[][] v = {fs(),fs(),walls(),walls(),walls(),nb(f,t,f,t,f),nb(f,f,t),fs()};
     public static final boolean[][] question = {iwall(),walls(),nb(f,f,f,f,t),nb(f,f,f,t),nb(f,f,t),fs(),nb(f,f,t),fs()};
-    public static final boolean[][] j = {nb(f,f,f,f,t),fs(),nb(f,f,f,f,t),nb(f,f,f,f,t),nb(f,f,f,f,t),walls(),walls(),iwall()};
+    // problem \/
+    public static final boolean[][] j = {{f,f,f,f,t},fs(),{f,f,f,f,t},{f,f,f,f,t},{f,f,f,f,t},walls(),walls(),iwall()};
+
     public static final boolean[][] H = {walls(),walls(),ts(),walls(),walls(),walls(),walls(),fs()};
     public static final boolean[][] W = {walls(),walls(),walls(),walls(),nb(t,f,t,f,t),nb(t,t,f,t,t),walls(),fs()};
     public static final boolean[][] T = {ts(),nb(f,f,t),nb(f,f,t),nb(f,f,t),nb(f,f,t),nb(f,f,t),nb(f,f,t),fs()};
@@ -217,6 +219,10 @@ public class CharArrays {
         return true;
     }
 
+    /**
+     * Creates an array of 8 arrays, each of which hold 5 falses.
+     * @return
+     */
     public static boolean[][] emptyArray() {
         return new boolean[][]{fs(),fs(),fs(),fs(),fs(),fs(),fs(),fs()};
     }
