@@ -4,11 +4,13 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class BookReader {
-    public static final int MAX_CHARS_IN_ROW = 66;
+    public static final int MAX_CHARS_IN_ROW = 58;
     public static final int LINE_WIDTH = MAX_CHARS_IN_ROW * 2;
     public static final int LINE_HEIGHT = CharArrays.HEIGHT + 1;
     public static final int PIXEL_WIDTH = 3;
@@ -25,6 +27,18 @@ public class BookReader {
 
     public BookReader() {}
 
+    public void saveBook(String text)  {
+        Book book = new Book();
+        File file = new File("books/" + book.getTitle() + ".txt");
+        try {
+            FileWriter writer = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
+            bufferedWriter.write(text);
+            bufferedWriter.close();
+        } catch (IOException e) {
+            System.out.println(e + " " + e.getMessage());
+        }
+    }
     public void takeScreenshot() {
         try {
             Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
@@ -46,7 +60,18 @@ public class BookReader {
 
 
     public boolean hasNext() {
+        if (image == null) takeScreenshot();
         return (new RGB(image.getRGB(ARROW.x,ARROW.y)).isDark());
+    }
+
+    /** won't read the first page
+     *
+     * @return
+     */
+    public String readThisPage() {
+        takeScreenshot();
+        nextPage();
+        return processScreenshot();
     }
     /**
      * Click the nextPage button onscreen,
@@ -62,13 +87,14 @@ public class BookReader {
                 Thread.sleep(10);
                 clicker.mousePress(InputEvent.BUTTON1_DOWN_MASK);
                 clicker.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+                Thread.sleep(50);
                 return true;
             } catch (AWTException | RuntimeException | InterruptedException e) {}
         }
         return false;
     }
 
-    public String processPage() {
+    public String processScreenshot() {
         StringBuilder stringBuilder = new StringBuilder();
         // go through each row
         for (int row = 0; row < ROWS; row++) {
@@ -125,6 +151,6 @@ public class BookReader {
             else break;
         }
         column += trueWidth;
-        return CharRecognition.recognize(array);
+        return CharRecognition.recognizeRisk(array, false);
     }
 }
