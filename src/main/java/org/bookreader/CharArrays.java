@@ -206,7 +206,7 @@ public class CharArrays {
      * @return
      */
     public static boolean riskyCompare(boolean[][] array, boolean[][] otherArray) {
-        if (array[3][3] != otherArray[3][3] || array[3][2] != otherArray[3][2]) {
+        if (array[3][3] != otherArray[3][3] || array[3][2] != otherArray[3][2] || array[1][1] != otherArray[1][1]) {
             return false;
         }
         for (int r = 0; r < HEIGHT; r+=2) {

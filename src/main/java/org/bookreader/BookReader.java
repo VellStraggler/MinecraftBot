@@ -76,7 +76,7 @@ public class BookReader {
     public String readThisPage() {
         takeScreenshot();
         int tries = 0;
-        while(shouldRetakeScreenshot() || tries < 50) {
+        while(shouldRetakeScreenshot() && tries < 50) {
             takeScreenshot();
             tries++;
         }
@@ -96,7 +96,7 @@ public class BookReader {
         // this assumes the column has text
         boolean blank = true;
         boolean duplicate = true;
-        int max = START_POINT.y + (LINE_WIDTH * PIXEL_WIDTH * ROWS);
+        int max = START_POINT.y + (LINE_HEIGHT * PIXEL_WIDTH * ROWS);
         for(int y = START_POINT.y; y < max; y+= PIXEL_WIDTH) {
             int currentRGB = image.getRGB(START_POINT.x, y);
             if (lastImage.getRGB(START_POINT.x,y) != currentRGB) {
@@ -118,11 +118,10 @@ public class BookReader {
             try {
                 Robot clicker = new Robot();
                 clicker.mouseMove(ARROW.x,ARROW.y);
-                Thread.sleep(10);
                 clicker.mousePress(InputEvent.BUTTON1_DOWN_MASK);
                 clicker.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
                 return true;
-            } catch (AWTException | RuntimeException | InterruptedException e) {}
+            } catch (AWTException | RuntimeException e) {}
         }
         return false;
     }
