@@ -22,6 +22,7 @@ public class BookReader {
     public static final XY NFS_ARROW = new XY(850,415);
 
     public BufferedImage image;
+    public BufferedImage lastImage;
     private int column = 0;
     private int blanks = 0;
 
@@ -40,6 +41,10 @@ public class BookReader {
         }
     }
     public void takeScreenshot() {
+        // Save the last screenshot
+        if (image != null) {
+            lastImage = image;
+        }
         try {
             Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
             image = new Robot().createScreenCapture(screenDimensions);
@@ -64,14 +69,43 @@ public class BookReader {
         return (new RGB(image.getRGB(ARROW.x,ARROW.y)).isDark());
     }
 
-    /** won't read the first page
-     *
+    /**
+     * Reads a page and tries to go to the next one
      * @return
      */
     public String readThisPage() {
         takeScreenshot();
+        int tries = 0;
+        while(shouldRetakeScreenshot() || tries < 50) {
+            takeScreenshot();
+            tries++;
+        }
         nextPage();
         return processScreenshot();
+    }
+
+    /**
+     * Should return true if the current image is a duplicate
+     * of the previous or if the current image is empty
+     * (such as when a page is loading)
+     * @return
+     */
+    public boolean shouldRetakeScreenshot() {
+        if (lastImage == null) return false;
+        // check a line in the first column of text
+        // this assumes the column has text
+        boolean blank = true;
+        boolean duplicate = true;
+        int max = START_POINT.y + (LINE_WIDTH * PIXEL_WIDTH * ROWS);
+        for(int y = START_POINT.y; y < max; y+= PIXEL_WIDTH) {
+            int currentRGB = image.getRGB(START_POINT.x, y);
+            if (lastImage.getRGB(START_POINT.x,y) != currentRGB) {
+                duplicate = false;
+            }
+            if (new RGB(currentRGB).isDark()) blank = false;
+        } if (blank || duplicate) {
+            return true;
+        } else return false;
     }
     /**
      * Click the nextPage button onscreen,
@@ -87,7 +121,6 @@ public class BookReader {
                 Thread.sleep(10);
                 clicker.mousePress(InputEvent.BUTTON1_DOWN_MASK);
                 clicker.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-                Thread.sleep(50);
                 return true;
             } catch (AWTException | RuntimeException | InterruptedException e) {}
         }
