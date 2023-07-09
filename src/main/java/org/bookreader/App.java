@@ -3,8 +3,6 @@ package org.bookreader;
 public class App {
     public static void main(String[] args) throws InterruptedException {
         readOneBook();
-//        p(CharRecognition.recognizeRisk(CharArrays.getArray('M'),false) + "");
-//        p(CharRecognition.recognizeRisk(CharArrays.getArray('H'),false) + "");
     }
     public static void readOneBook() throws InterruptedException {
         BookReader reader = new BookReader();

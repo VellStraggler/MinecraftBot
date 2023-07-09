@@ -1,0 +1,615 @@
+  -=: SpiderWire :=-    
+  .By: VellStraggler.   
+                            
+Chapters:                 
+1 - Introduction        
+2 - Applications         
+3 - How to Make it      
+                            
+Foreword: I highly      
+recommend this book   
+to any beginner or     
+intermediate redstone 
+engineers.                
+                            
+
+      - Chap. 1 -        
+     Introduction       
+                            
+ Since the dawn of    
+redstone engineering, 
+redstone wires have   
+been the primary way  
+of sending signals      
+across long             
+distances. Yes, other  
+methods have been     
+created, such as       
+observer lines, sticky 
+piston lines, and even 
+
+minecarts. Redstone    
+wires are faster than 
+all of these, but with a
+limitation. Redstone     
+wires cannot take a    
+signal along forever.  
+They have a limited     
+radius, making it         
+necessary to repeat  
+the signal. The easiest
+way to do this is... well, 
+repeaters.               
+ An RS  Redstone      
+signal) has a reach of
+
+12 blocks. Then you    
+add a repeater, and   
+the spot after that    
+has a signal strength 
+of 12 again. Keep in    
+mind also that while a  
+signal over wire        
+travels immediately     
+from one end to the   
+other, a repeater      
+brings with it a          
+latency of about 0.2   
+seconds. And so for   
+every 13 blocks a      
+
+signal must travel, the 
+endpoint reception is  
+delayed by those 0.2  
+seconds, or 65 blocks 
+per second  BPS).      
+ This is fine for most 
+designs. However, we   
+here at the Bellayori  
+Engineering Institution 
+are impatient and       
+evermore eager to     
+improve.                   
+ So, two studies were 
+done, with the goal of  
+
+increasing signal       
+speed past 65 BPS.     
+The first was a         
+magnificent success,   
+and the second was    
+more of a footnote.    
+ The Footnote:          
+redstone can send a  
+signal through a block
+without any additional  
+loss of range. The     
+catch is that it needs  
+a repeater on one     
+side of this block. We  
+
+tested this, and found 
+that the place where  
+you would put a         
+repeater could be     
+replaced by what we   
+call a ''shelved          
+repeater''. For this     
+simple device, you      
+need only place a      
+block, a repeater, and 
+another block, and     
+then continue the       
+signal, as shown in the
+following diagram:       
+
+                            
+  . . . . . []>>[] . . . . .    
+  []: a block             
+  >>: a repeater        
+  . .: redstone wire     
+                            
+ By implementing this,  
+you lengthen the       
+radius of your signal  
+by 2, for a total of    
+15.                         
+ Great news, right?    
+That's a 15% increase, 
+and even cheaper      
+
+to produce than        
+before. With this, we    
+can send signals at a 
+speed of 75 BPS!       
+ This does have its    
+merits, but it pales in  
+comparison to the      
+results of our first   
+study.                     
+ You are familiar with 
+string, yes? Half the   
+remnants of any given
+spider? And of          
+course you've heard  
+
+of tripwire, which is    
+made of said string?   
+How wide can a          
+tripwire be made? 5    
+blocks? 10? 20? Well,  
+we learned a while ago
+that you can make a   
+tripwire that is 42      
+blocks long, including  
+the hooks. The signal  
+it gives extends past  
+the blocks the hooks  
+are on, bringing on a  
+signal radius of 44.    
+
+ Now that's a large    
+number. The only       
+issue is that tripwires 
+are set off by things, 
+which we at first        
+determined to mean     
+only creatures or     
+dropped items. A        
+prototype was made    
+which strung together 
+tripwires with            
+dispensers full of      
+items that each          
+triggered the next     
+
+wire, but already that 
+would mean the          
+dispensers would       
+need refilling.           
+Redstone is not meant 
+to have upkeep costs, 
+so even if this was     
+faster than              
+repeaters, it would     
+never be worth it.      
+ But, in our recent    
+first study, we          
+realized something...    
+minecarts trigger       
+
+tripwires too.            
+ We began modelling   
+at once. Quickly, we     
+made a design that     
+triggered strings of   
+tripwire together by   
+having each push a    
+minecart into the next. 
+Issues were quickly    
+sorted out, and all of 
+the sudden, 44 blocks 
+in 0.2 seconds was a   
+reality.                    
+ The design was        
+
+quickly made more      
+elegant. In no world    
+could this be cheaper 
+than a few repeaters, 
+but we could get        
+close. Originally, the   
+piston pushed the      
+minecart up, and then  
+it would fall down       
+slowly, meaning the     
+signal would turn off  
+very slowly, so we      
+wrapped it in slime      
+blocks to pull it on the
+
+way down as well. This 
+sped it up some, but    
+we could do better.    
+ To prevent the slime 
+blocks from wrecking  
+the tripwire, the         
+minecart would be      
+placed *between* them,
+half in one block, half 
+in the other. We also   
+crammed the minecart  
+under a half slab for 
+complete control, but  
+with flooring on both   
+
+blocks to prevent the 
+cart from squeezing   
+through the slime       
+under it.                  
+ Unfortunately,         
+though this did          
+decrease the            
+signal-off time, it was  
+still slower to turn     
+off than a string of   
+repeaters. Tripwire    
+hooks activate          
+immediately, but take    
+the time of a button to
+
+deactivate. Maybe one 
+day, we'll solve that    
+issue, but the list of   
+applications for our   
+new signal-on is still   
+lengthy.                   
+ For each pair of     
+tripwire hooks, a        
+piston must be           
+activated, which runs  
+at 0.2 seconds. At      
+each repeat station,   
+these hook ends        
+cannot be on the same
+
+block, or else the      
+piston will remain        
+turned on by its own   
+minecart. We set the    
+tripwire hooks to be   
+on blocks side by side,
+meaning the signal,     
+with 40 meters of wire 
+and 4 meters of hook  
+and block, would        
+travel at 220 BPS. But 
+even this is not the    
+max. You see, by        
+taking full advantage  
+
+of the redstone that  
+has to power the       
+pistons, we can max    
+out that redstone and 
+place the hook ends a 
+full 12 blocks apart.   
+This alternating         
+tripwire-redstone      
+design, aptly named    
+SpiderWire, sends       
+signals at a rate of    
+260 BPS, or 247%       
+faster than traditional
+repeaters.               
+
+ But at what cost?     
+Let us compare:         
+                            
+Repeaters per 260m:   
+17.3x repeaters        
+209x redstone          
+34x blocks               
+3.46 seconds            
+                            
+ All in all, not bad. But
+17 repeaters make up 
+51 additional stone     
+and 34 more redstone.
+                            
+
+SpiderWire per 260m:   
+200x string              
+60x redstone            
+10x tripwire hook       
+5x sticky piston         
+15x slime block          
+5x boat                   
+ cheaper than carts) 
+12.5x blocks             
+ using half slabs)     
+1 second                 
+                            
+ In both statistic       
+sets, ground blocks    
+
+were not included      
+ primarily because we 
+live underground).     
+Really, we should       
+include blocks mined:   
+      520 vs. 650       
+So, demolition time and 
+construction costs     
+both increase for      
+SpiderWire. But if made
+*above* ground, block 
+count is the same. It's 
+really the slime that's 
+the issue, especially   
+
+given that it is in        
+short supply in         
+Bellayori. In fact,       
+about every 2 meters 
+requires a slimeball.   
+That's expensive!       
+ But who even asked  
+for faster redstone   
+to begin with? What     
+would make it worth it  
+to send a signal 3.5    
+times faster at 10      
+times the cost?  And   
+yes, I do think slime is 
+
+20 times more valuable
+than redstone, at       
+least presently)        
+ Well, that brings us   
+to what really is the   
+heart and soul of      
+Bellayori.                 
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+
+      - Chap. 2 -        
+      Applications       
+                            
+ To your average     
+engineer, faster        
+redstone might not     
+mean much. Either we   
+need a door that       
+opens immediately but  
+is near the signal      
+source, or we want to 
+light up a hallway       
+when the sun goes     
+down. But here at the  
+
+Bellayori Engineering  
+Institute, we enjoy     
+thinking up so much    
+more.                      
+1. Instant defenses.   
+ Oh no! A raid has     
+begun. Time to activate
+our lava moat and      
+close our doors on    
+all ends of the          
+premises. Nothing will   
+get in. Nothing will       
+survive.                   
+                            
+
+2. The Control Room.   
+ Long have we          
+thought of making all   
+machines in Bellayori   
+automatic, with a single
+room of buttons and   
+levers to control it    
+all. From here, we       
+could turn on and off 
+anything in the whole  
+country in less than a
+second.                   
+3. Material retrieval.   
+ Our storage is        
+
+composed of 3 dozen  
+boxes, most of which   
+are sitting in our       
+lobby. Expansion is     
+inevitable. But imagine  
+one day you just want
+all the materials for a 
+certain item              
+immediately, and item    
+which takes up lots of 
+space. Perhaps, a bed 
+or a cake. Imagine a   
+touch of a button, and
+all the sudden you     
+
+have 3 wood and 3     
+wool. Immediately. And  
+a sudden appearance 
+of a crafting bench.   
+This is far less for    
+efficiency and far     
+more because that's   
+just freaking cool.     
+4. CALCULATOR.          
+ Yes, we have           
+designed a calculator 
+before. All it did was   
+add 1 to a max of 10,  
+but it was still cool.    
+
+It was also slow. You   
+would press the add   
+button only to wait 3   
+seconds for the        
+number to update. 3    
+seconds?? Abominable.
+We could fix that. It    
+would take 2 acres,    
+but we could fix it.      
+5. Off-limits Doors.     
+ It would be so much  
+fun to create a door  
+that closes before     
+you can get to it, no   
+
+matter how fast you   
+can run or fly or      
+teleport. Only a         
+special key or time     
+could keep it open.     
+Imagine that.             
+6. Stasis chamber       
+chain.                      
+ We all know about     
+stasis chambers  if    
+you don't, please read
+my book, How to Make a
+Stasis Chamber), but   
+imagine you wanted to  
+
+get back home quickly, 
+but didn't have a        
+chunk loader            
+ because they were    
+banned from the face 
+of the earth). Instead,
+you'd set up several  
+stasis chambers along
+your way, and once    
+you're done, a press  
+of a button and a few 
+seconds later, you're 
+back home. Granted,    
+this would take a LOT  
+
+of pearls.                
+7. Lag Reduction.        
+ You heard me.         
+Redstone wire actually
+produces most of the 
+computational or        
+server lag in a         
+machine, so by           
+replacing it with string
+and a small number of 
+pistons, you actually   
+help the cause of      
+reducing lag!            
+8. Sending a Message.  
+
+ If you want to know  
+when something is       
+done the moment it's    
+done, like all your      
+glass cooking or a     
+box being full or       
+daytime occuring,       
+SpiderWire can help.   
+As Bellayori expands,  
+we will still want         
+everything to be as    
+accessible as           
+possible, including      
+pings from machines.   
+
+9. Hiding the Evidence. 
+ This is similar to the 
+not-so-shy door from
+number 5. Say that we 
+want a number of       
+rooms to be closed    
+when a guest arrives. 
+Perhaps we enjoy an  
+open-concept area,    
+but in the blink of an  
+eye, it could all just   
+disappear. Likely, we'll 
+never need this, but   
+you never know.        
+
+10. Universal Time.      
+ This is similar to the 
+calculator. Everyone  
+knows how to make a   
+clock, but not            
+everyone knows how   
+to make a grid of       
+clock faces that are  
+all connected to one   
+main computer. This     
+would increase the     
+grandioseness of      
+Bellayori, and let you  
+know just what time it  
+
+is. I'm thinking a full on
+digit would look the     
+coolest, with one at    
+each side of the        
+country.                  
+11. A Video game.        
+ This concept is new  
+to people in this world.
+No one has EVER        
+played a video game,   
+nor have they seen a 
+video screen. Such     
+devices take acres of 
+hidden-away land, but 
+
+they would be such a  
+joy, and would          
+perhaps bring more    
+visitors  we are very  
+lonely).                    
+ Granted, we don't     
+really have the         
+patience to make one  
+of these, nor the skill. 
+Something to think of   
+down the road, I        
+suppose.                  
+                            
+                            
+
+ Remember, we don't   
+believe in ''good         
+enough''. We have a     
+higher standard here, 
+and we have a lifetime 
+to hone that standard.
+That's what Moth said.  
+This world is forever. 
+                            
+                            
+                            
+                            
+                            
+                            
+
+      - Chap. 3 -        
+    How to Make it      
+                            
+ Did you really think  
+I'd put instructions on 
+page FORTY?? No no,   
+to make SpiderWire,     
+simply hire me,           
+VellStraggler,           
+engineer, mechanic,     
+and inventor. I would  
+be happy to hear       
+about other              
+applications of this     
+
+design, so if you have 
+any, please share!!     
+ Thank you very       
+much for reading this, 
+despite us living in     
+what could only be     
+called a virtual         
+reality. I hope you     
+enjoyed reading as    
+much as I enjoyed     
+writing  doubtful).       
+                            
+                            
+      - The End -       
+

@@ -1,0 +1,60 @@
+}================={ 
+ How to make a 2x2    
+      Button Door       
+}================={ 
+Designed by:             
+VellStraggler            
+                            
+       ..............i........         
+       [][][]*][][]         
+       [|-||[][]||-|]         
+       [|-||[][]||-|]         
+                            
+                            
+                            
+
+Base Materials:          
+x4 sticky pistons       
+x5 redstone             
+x1 redstone torch     
+x2 button                 
+                            
+ 1) Put 2 columns of   
+pistons 4 blocks        
+apart, facing each     
+other.                     
+     [||      ||]             
+     [||____||]             
+                            
+                            
+
+2. Put a layer of        
+blocks across the top.
+                            
+3. Put a layer of        
+redstone across the  
+top, leaving one open  
+spot for a redstone   
+torch.                     
+                            
+4. Put buttons on the  
+block that the torch is
+on.                         
+                            
+5. Place door blocks.  
+
+And just like that, you 
+have a simple piston   
+door. It is one block   
+thick besides the       
+buttons, and can of    
+course be covered    
+with any number of     
+blocks.                    
+                            
+       .............i.........         
+       [][][][*[][]         
+       [|-||[][]||-|]         
+       [|-||[][]||-|]         
+                            
+

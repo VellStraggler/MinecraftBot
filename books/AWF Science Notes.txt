@@ -1,0 +1,195 @@
+-------------------
+   Scientific notes     
+on the Making of the  
+Automatic Wood Farm  
+-------------------
+By: VellStraggler       
+-------------------
+ In this ever-growing 
+world, the desire to    
+create is insatiable.    
+The desire to farm,    
+however, is not. But    
+the need, as well, to    
+industrialize is some-  
+
+thing that I simply      
+cannot set aside. In    
+this cubic dimension,    
+the very idea that a   
+little extra effort can 
+produce results a     
+thousand times higher 
+than of that of a       
+normal person's two   
+hands is sheer bliss.  
+That is why I venture  
+this new project, a     
+machine that farms     
+wood.                      
+
+ The most difficult     
+issue in this case is    
+fuel, or bonemeal.      
+Bonemeal can be        
+gathered from a        
+variety of ways, but it 
+will save many           
+resources to find the 
+best one.                 
+ Sugarcane sticks     
+out, as it can be        
+composted and grows  
+on its own regardless 
+of being harvested.    
+
+ Bamboo,                 
+unfortunately, has no 
+use here.                 
+ Melon slices also     
+work, and are possibly
+more space-efficient  
+than sugarcane.        
+Perhaps the entire     
+world will one day run 
+on melon.                 
+ So, it is decided. For 
+simplicity's sake, the    
+wood farm will be       
+directly under our     
+
+main melon farm, and if
+we feel the need for  
+more emeralds,          
+another will be          
+constructed             
+ honestly, it was        
+harder just to get     
+the materials than to  
+construct it).            
+ The next issue is     
+tree planting. To my    
+knowledge, this can     
+only be done by hand. 
+But thanks to our      
+
+advancements in the   
+field of the              
+subconscious, this will 
+be simplified. In a       
+perfect world, it would
+be entirely automatic,  
+but there is no real   
+way around this.        
+                            
+ After running a few  
+tests and prototypes, 
+I've learned that the  
+average enclosed      
+tree takes 29 bone-   
+
+meal to grow in quick   
+succession.              
+Theoretically, having   
+the leaves burning     
+constantly would        
+increase the amount   
+of space and            
+decrease the amount  
+of bonemeal per tree. 
+ I also found the      
+rate at which melons   
+compost into bonemeal.
+960 of them take 2:23  
+to create 78 bonemeal
+
+in 3 composters, and   
+so one stack of         
+melons in one            
+composter produces   
+5.2 bonemeal in 2:23,   
+or 2.18 bonemeal per  
+minute. Furthermore, it 
+takes 12.3 melons to   
+make one bonemeal,     
+which depletes in the  
+tree planting machine  
+every 0.2 seconds.     
+ Given that a single   
+bonemeal requires     
+
+27.5 seconds to be     
+made, I'd need 137      
+composters just to    
+keep up. That's no      
+good.                      
+ With the                 
+tree-chopping part of
+the machine, the TNT is
+rather efficient. In     
+2:09, it gathered 92    
+wood from 24 trees,   
+which garners only a  
+4.2% loss rate. This is 
+also gathering 0.713   
+
+logs per second,       
+which I must now        
+compare to live         
+chopping in our         
+surface farm.           
+                            
+ The 25 trees take    
+2:05 to chop  without   
+using leaf-cutters),    
+and drops 117 logs,   
+that being 0.936 logs  
+per second. I estimate 
+it would take 70% as    
+long to chop with leaf 
+
+-cutters, but when it's 
+taken into account     
+that these trees must 
+be replanted and       
+grow on their own...     
+ At the end of the     
+day, the most            
+important time factor  
+is how much bonemeal  
+we have. For now, the  
+Auto Tree Farm idea   
+will be put to rest, and
+we'll begin collecting   
+more bonemeal. I have 
+
+a feeling that the       
+bonemeal to tree ratio
+in the manual farm is a
+fraction of what it is   
+automatically,            
+especially given that   
+time is a replacement  
+for bonemeal.            
+ It is also important   
+to remember that the  
+AWF does not at this   
+time collect saplings,   
+and as it takes 12 a   
+minute, this is a bit of  
+
+an issue. I hear that   
+they may cancel our   
+project altogether,    
+which would be a        
+shame. Of course,      
+we're receiving a lot   
+of funding  time) that  
+could be used           
+elsewhere. If we were 
+to then create an AWF 
+that did harvest        
+saplings, perhaps the 
+project could be       
+allowed completion.     
+

@@ -14,7 +14,7 @@ public class BookReader {
     public static final int LINE_WIDTH = MAX_CHARS_IN_ROW * 2;
     public static final int LINE_HEIGHT = CharArrays.HEIGHT + 1;
     public static final int PIXEL_WIDTH = 3;
-    public static final int ROWS = 13;
+    public static final int ROWS = 14;
     public static final XY START_POINT = new XY(622,97);
     public static final XY ARROW = new XY(904,490);
     // Points if you were to start in non-fullscreen. Only issue is Pixel-width becomes fractional
@@ -183,6 +183,6 @@ public class BookReader {
             else break;
         }
         column += trueWidth;
-        return CharRecognition.recognizeRisk(array, false);
+        return CharRecognition.recognize(array, false);
     }
 }

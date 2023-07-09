@@ -1,0 +1,60 @@
+_     ---^---       _  
+/    How to Make a    \
+\     Rail Factory     /
+~     ---v---       ~  
+  By: VellStraggler    
+                            
+ With this machine, you
+can create rails at    
+will, at a nice rate of  
+about 5 per second. It
+does not matter what  
+kind of rail, as all of   
+them work.                
+                            
+
+Necessary Supplies:   
+                            
+2x Slime Block           
+1x Sticky Piston         
+1x Observer             
+2x Any block             
+2x Redstone             
+2x Any rail               
+                            
+For the purpose of    
+this book, we will refer
+to directions on the    
+page like a map          
+ north, south, etc.)     
+
+Follow this Diagram:     
+       __.____           
+       |\#\1\*\          
+       \|\#\_\*\         
+        .\|_ |2 |!_|         
+                            
+#: a slime block with a  
+rail on top               
+1: a sticky piston       
+pushing west             
+2: an observer looking
+west                       
+*: a block of choice    
+with redstone on top.  
+
+!: Finally, this is the     
+initial power source, a 
+lever. Flip it on, and    
+then flip it off to set  
+the machine running.   
+It's that simple! We      
+recommend flowing      
+water below it to        
+catch the duplicated   
+rails.                      
+                            
+                            
+Credits: found it online
+idk                         
+
