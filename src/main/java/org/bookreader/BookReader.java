@@ -29,38 +29,20 @@ public class BookReader {
     public BookReader() {}
 
     public void saveBook(String text)  {
-        Book book = new Book();
-        File file = new File("books/" + book.getTitle() + ".txt");
-        try {
-            FileWriter writer = new FileWriter(file);
-            BufferedWriter bufferedWriter = new BufferedWriter(writer);
-            bufferedWriter.write(text);
-            bufferedWriter.close();
-        } catch (IOException e) {
-            System.out.println(e + " " + e.getMessage());
-        }
+        Utils.saveToTextFile(text, "books/book");
     }
     public void takeScreenshot() {
         // Save the last screenshot
         if (image != null) {
             lastImage = image;
         }
-        try {
-            Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-            image = new Robot().createScreenCapture(screenDimensions);
-        } catch (AWTException e) {
-            System.out.println("Image grab failed: " + e + " " + e.getMessage());
-        }
+        image = Utils.takeScreenshot();
     }
     public void saveImage() {
-        try {
-            ImageIO.write(image, "png", new File("src/main/java/org/bookreader/saved-image.png"));
-        } catch (IOException e) {
-            p("Unable to save image: " + e + " " + e.getMessage());
-        }
+        Utils.saveImage(image, "src/main/java/org/bookreader/saved-image");
     }
     public static void p(String s) {
-        System.out.println(s);
+        Utils.p(s);
     }
 
 
@@ -114,14 +96,7 @@ public class BookReader {
      */
     public boolean nextPage() {
         if (hasNext()) {
-            // click
-            try {
-                Robot clicker = new Robot();
-                clicker.mouseMove(ARROW.x,ARROW.y);
-                clicker.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-                clicker.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-                return true;
-            } catch (AWTException | RuntimeException e) {}
+            return Utils.clickHere(ARROW);
         }
         return false;
     }

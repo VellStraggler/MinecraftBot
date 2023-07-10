@@ -2,7 +2,9 @@ package org.bookreader;
 
 public class App {
     public static void main(String[] args) throws InterruptedException {
-        readOneBook();
+        //readOneBook();
+        Thread.sleep(4000);
+        Utils.saveImage(Utils.takeScreenshot(), "screenshots/F3");
     }
     public static void readOneBook() throws InterruptedException {
         BookReader reader = new BookReader();

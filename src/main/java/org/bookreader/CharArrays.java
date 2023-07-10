@@ -199,14 +199,15 @@ public class CharArrays {
     /**
      * This comparison skips every other row and column, but still checks
      * (3, 3) and (3, 2). It appears to be correct for the 93 acceptable characters.
-     * This makes it 1.6 times faster than regular compare().
+     * This makes it 1.5 times faster than regular compare().
      * It is still 9 times slower than a knownDigit compare.
      * @param array
      * @param otherArray
      * @return
      */
     public static boolean riskyCompare(boolean[][] array, boolean[][] otherArray) {
-        if (array[3][3] != otherArray[3][3] || array[3][2] != otherArray[3][2] || array[1][1] != otherArray[1][1]) {
+        if (array[3][3] != otherArray[3][3] || array[3][2] != otherArray[3][2]
+         || array[1][1] != otherArray[1][1] || array[7][0] != otherArray[7][0]) {
             return false;
         }
         for (int r = 0; r < HEIGHT; r+=2) {

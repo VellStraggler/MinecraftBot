@@ -22,4 +22,7 @@ public class RGB {
     public boolean isDark() {
         return r + g + b < MID * 3;
     }
+    public boolean isWhite() {
+        return r + g + b == 255 * 3;
+    }
 }
