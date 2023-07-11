@@ -1,14 +1,17 @@
-package org.bookreader;
+package org.mcbot;
+
+import java.awt.image.BufferedImage;
 
 public class App {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         //readOneBook();
-        Thread.sleep(4000);
-        Utils.saveImage(Utils.takeScreenshot(), "screenshots/F3");
+        BufferedImage image = Utils.retrieveImage("screenshots/F3-DONT-DELETE");
+        F3Data data = new F3DataReader(image).readScreen();
+        p(data.toString());
     }
-    public static void readOneBook() throws InterruptedException {
+    public static void readOneBook() {
         BookReader reader = new BookReader();
-        Thread.sleep(4000);
+        Utils.sleep(4000);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(reader.readThisPage()).append("\n");
         while (reader.hasNext()) {

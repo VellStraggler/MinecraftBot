@@ -1,4 +1,4 @@
-import org.bookreader.CharRecognition;
+import org.mcbot.CharRecognition;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

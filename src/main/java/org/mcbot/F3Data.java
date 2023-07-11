@@ -1,4 +1,4 @@
-package org.bookreader;
+package org.mcbot;
 
 /**
  * Stores all data deemed important from an F3 screenshot.
@@ -9,11 +9,15 @@ public class F3Data {
     public static XY COORDINATES =  new XY(103,304);
     public static XY FACING =       new XY(121,358);
     public static XY LIGHT_LEVEL =  new XY(190,385);
-    public static XY BIOME =        new XY(103,466);
+    public static XY BIOME =        new XY(250,466);
     public static XY TARGETED_BLOCK=new XY(1435,304);
+    public static XY RESOLUTION =   new XY(1006,196);
     public static XY BLOCK_TYPE =   new XY(1441,331);
     public static XY MINEABLE_HOW = new XY(1486,358);
     public static XY DAY =          new XY(523,493);
+    public static XY[] LEFT_SIDE = {COORDINATES, FACING, LIGHT_LEVEL, BIOME, DAY};
+    // RESOLUTION is omitted because if it is wrong, the rest of the list is not worth reading
+    public static XY[] RIGHT_SIDE = {TARGETED_BLOCK, BLOCK_TYPE, MINEABLE_HOW};
     public final XYZ coordinates;
     public final XY facing;
     public final int lightLevel;
@@ -36,7 +40,7 @@ public class F3Data {
     public Builder builder() {
         return new Builder();
     }
-    public class Builder {
+    public static class Builder {
         private XYZ coordinates;
         private XY facing;
         private int lightLevel;
@@ -81,6 +85,16 @@ public class F3Data {
             day = d;
             return this;
         }
+    }
+    public String toString() {
+        return "\nCoordinates: " + coordinates.toString() + "\n"
+                +"Facing: " + facing.toString() + "\n"
+                +"Light level: " + lightLevel + "\n"
+                +"Biome: " + biome + "\n"
+                +"Targeted block: " + targetedBlock.toString() + "\n"
+                +"Targeted block type: " + targetedBlockType + "\n"
+                +"Mineable how: " + mineableHow + "\n"
+                +"Day: " + day;
     }
 
 }

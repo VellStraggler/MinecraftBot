@@ -1,4 +1,4 @@
-package org.bookreader;
+package org.mcbot;
 
 public class XYZ extends XY{
     public int z;

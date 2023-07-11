@@ -1,4 +1,4 @@
-package org.bookreader;
+package org.mcbot;
 
 public class Item {
 //    private Recipe recipe;

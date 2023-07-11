@@ -1,4 +1,4 @@
-package org.bookreader;
+package org.mcbot;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,6 +14,7 @@ import java.io.IOException;
  * and saving data to the hard drive
  */
 public class Utils {
+    public static final XY SCREEN_RESOLUTION = new XY(1600,900);
     /**
      * Saves only to txt files. The path should not include ".txt"
      * @param text
@@ -42,6 +43,10 @@ public class Utils {
     public static BufferedImage takeScreenshot() {
         try {
             Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+            if (screenDimensions.getX() != SCREEN_RESOLUTION.x || screenDimensions.getY() != SCREEN_RESOLUTION.y) {
+                throw new RuntimeException("Screen Resolution is wrong. Is " + screenDimensions.toString() + "when it should be " +
+                        SCREEN_RESOLUTION.toString());
+            }
             return new Robot().createScreenCapture(screenDimensions);
         } catch (AWTException e) {
             System.out.println("Image grab failed: " + e + " " + e.getMessage());
@@ -59,6 +64,14 @@ public class Utils {
             ImageIO.write(image, "png", new File(path + ".png"));
         } catch (IOException e) {
             System.out.println("Unable to save image: " + e + " " + e.getMessage());
+        }
+    }
+    public static BufferedImage retrieveImage(String path) {
+        try {
+            return ImageIO.read(new File(path + ".png"));
+        } catch (IOException e) {
+            Utils.p("Unable to read image with path: " + path);
+            return null;
         }
     }
 
@@ -112,5 +125,12 @@ public class Utils {
      */
     public static boolean isWhite(BufferedImage image, int x, int y) {
         return new RGB(image.getRGB(x,y)).isWhite();
+    }
+    public static void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            p("Unable to sleep? " + e.getMessage());
+        }
     }
 }

@@ -1,8 +1,6 @@
-package org.bookreader;
+package org.mcbot;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CharArrays {
@@ -23,6 +21,7 @@ public class CharArrays {
     private static boolean[] nb(boolean a, boolean b, boolean c) { return new boolean[]{a,b,c,f,f};}
     private static boolean[] nb(boolean a, boolean b) { return new boolean[]{a,b,f,f,f};}
     private static boolean[] nb(boolean a) { return new boolean[]{a,f,f,f,f};}
+    /** returns {true, f, f, f, f} **/
     private static boolean[] nb()          { return new boolean[]{t,f,f,f,f};}
     private static boolean[] nb(int a) {
         switch(a){

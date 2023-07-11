@@ -1,19 +1,13 @@
-package org.bookreader;
+package org.mcbot;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import static org.mcbot.CharRecognition.PIXEL_WIDTH;
 
 public class BookReader {
     public static final int MAX_CHARS_IN_ROW = 58;
     public static final int LINE_WIDTH = MAX_CHARS_IN_ROW * 2;
     public static final int LINE_HEIGHT = CharArrays.HEIGHT + 1;
-    public static final int PIXEL_WIDTH = 3;
     public static final int ROWS = 14;
     public static final XY START_POINT = new XY(622,97);
     public static final XY ARROW = new XY(904,490);
@@ -129,7 +123,6 @@ public class BookReader {
                     stringBuilder.append(" ");
                     blanks = 0;
                 }
-                column += 1;
                 blanks += 1;
             }
             stringBuilder.append("\n");
@@ -139,6 +132,13 @@ public class BookReader {
     public boolean isInkedPixel(int x, int y) {
         return new RGB(image.getRGB(x,y)).isDark();
     }
+
+    /**
+     * CharRecognition has added functionality similar to this, but I don't want to break this code at all.
+     * @param startingX
+     * @param startingY
+     * @return
+     */
     public char processChar(int startingX, int startingY) {
         // map the character to an array
         boolean[][] array = CharArrays.emptyArray();
