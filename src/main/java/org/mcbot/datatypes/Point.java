@@ -1,4 +1,4 @@
-package org.mcbot;
+package org.mcbot.datatypes;
 
 import java.util.List;
 

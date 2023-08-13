@@ -1,4 +1,4 @@
-package org.mcbot;
+package org.mcbot.datatypes;
 
 public class XYZ extends XY{
     public int z;

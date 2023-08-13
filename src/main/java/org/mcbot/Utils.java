@@ -1,5 +1,8 @@
 package org.mcbot;
 
+import org.mcbot.datatypes.RGB;
+import org.mcbot.datatypes.XY;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -10,10 +13,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Holds functions for things like keystrokes, screenshots,
+ * Static-only class that holds functions for things like keystrokes, screenshots,
  * and saving data to the hard drive
  */
 public class Utils {
+    // There is no perceivable difference in frame-rate if you screenshot the whole window or half the window
     public static final XY SCREEN_RESOLUTION = new XY(1600,900);
     /**
      * Saves only to txt files. The path should not include ".txt"
@@ -43,10 +47,6 @@ public class Utils {
     public static BufferedImage takeScreenshot() {
         try {
             Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-            if (screenDimensions.getX() != SCREEN_RESOLUTION.x || screenDimensions.getY() != SCREEN_RESOLUTION.y) {
-                throw new RuntimeException("Screen Resolution is wrong. Is " + screenDimensions.toString() + "when it should be " +
-                        SCREEN_RESOLUTION.toString());
-            }
             return new Robot().createScreenCapture(screenDimensions);
         } catch (AWTException e) {
             System.out.println("Image grab failed: " + e + " " + e.getMessage());

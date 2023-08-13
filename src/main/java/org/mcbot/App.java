@@ -4,10 +4,15 @@ import java.awt.image.BufferedImage;
 
 public class App {
     public static void main(String[] args) {
-        //readOneBook();
-        BufferedImage image = Utils.retrieveImage("screenshots/F3-DONT-DELETE");
-        F3Data data = new F3DataReader(image).readScreen();
-        p(data.toString());
+        //setup
+        Utils.sleep(4000);
+        F3DataReader dataReader = new F3DataReader();
+        F3Data screenData = dataReader.readScreen();
+
+        Movement movement = new Movement(screenData.coordinates, screenData.facing);
+        movement.moveForward();
+        Utils.sleep(2000);
+        movement.releaseAllKeys();
     }
     public static void readOneBook() {
         BookReader reader = new BookReader();

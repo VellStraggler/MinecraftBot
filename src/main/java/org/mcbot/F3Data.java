@@ -1,5 +1,8 @@
 package org.mcbot;
 
+import org.mcbot.datatypes.XY;
+import org.mcbot.datatypes.XYZ;
+
 /**
  * Stores all data deemed important from an F3 screenshot.
  * The most boilerplatiest code there ever was.
@@ -12,9 +15,9 @@ public class F3Data {
     public static XY BIOME =        new XY(250,466);
     public static XY TARGETED_BLOCK=new XY(1435,304);
     public static XY RESOLUTION =   new XY(1006,196);
-    public static XY BLOCK_TYPE =   new XY(1441,331);
-    public static XY MINEABLE_HOW = new XY(1486,358);
-    public static XY DAY =          new XY(523,493);
+    public static XY BLOCK_TYPE =   new XY(1200,331); //new XY(1441,331);
+    public static XY MINEABLE_HOW = new XY(1486,358); //FIXME: This variable is often not even present
+    public static XY DAY =          new XY(7, 493); //new XY(523,493); //taking the whole line
     public static XY[] LEFT_SIDE = {COORDINATES, FACING, LIGHT_LEVEL, BIOME, DAY};
     // RESOLUTION is omitted because if it is wrong, the rest of the list is not worth reading
     public static XY[] RIGHT_SIDE = {TARGETED_BLOCK, BLOCK_TYPE, MINEABLE_HOW};

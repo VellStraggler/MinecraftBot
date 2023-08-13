@@ -1,5 +1,8 @@
 package org.mcbot;
 
+import org.mcbot.datatypes.RGB;
+import org.mcbot.datatypes.XY;
+
 import java.awt.image.BufferedImage;
 
 import static org.mcbot.CharRecognition.PIXEL_WIDTH;

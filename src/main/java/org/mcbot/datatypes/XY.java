@@ -1,5 +1,8 @@
-package org.mcbot;
+package org.mcbot.datatypes;
 
+/**
+ * Simple, modifiable coordinate object
+ */
 public class XY {
     public int x;
     public int y;

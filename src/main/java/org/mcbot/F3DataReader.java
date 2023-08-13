@@ -1,6 +1,9 @@
 package org.mcbot;
 
-import javax.print.DocFlavor;
+import org.mcbot.datatypes.RGB;
+import org.mcbot.datatypes.XY;
+import org.mcbot.datatypes.XYZ;
+
 import java.awt.image.BufferedImage;
 import java.util.function.Supplier;
 
@@ -14,23 +17,22 @@ public class F3DataReader {
     private F3Data data;
     private BufferedImage screen;
 
+    /** Used to extract data from screenshots. **/
     public F3DataReader() {}
-    public F3DataReader(BufferedImage screen) {
-        this.screen = screen;
-    }
+
+    /** Takes a screenshot and returns the data from it **/
     public F3Data readScreen() {
         // Take a screenshot or use the current one
-        if (screen == null) {
-            screen = Utils.takeScreenshot();
-        }
+        screen = Utils.takeScreenshot();
+
         // Detect if F3 mode is on. This checks the top left corner of 'Minecraft ver...etc'
         if (!RGB.F3_WHITE.equals(screen,7,7) && !RGB.F3_WHITE.equals(screen,4,4)) {
             // Press F3 if that isn't the case
             Utils.pressAndReleaseKey(VK_F3);
             // Might be too quick
             Utils.sleep(100);
+            // Obviously we need a new screenshot now
             screen = Utils.takeScreenshot();
-            // throw new RuntimeException(new RGB(screen.getRGB(7,7)).toString());
         }
         // Check if there is a targeted block
         boolean targetedBlock = (!Utils.isWhite(screen, 1186,301) && Utils.isWhite(screen,1189,304));
@@ -62,8 +64,8 @@ public class F3DataReader {
             return new XYZ(x,y,z);
         };
         Supplier<Integer> getDay = () -> {
-            String init = new CharRecognition(screen,F3Data.DAY, RGB.F3_WHITE).readToThreeSpaces();
-            return Integer.parseInt(init.substring(0, init.indexOf(")")));
+            String init = new CharRecognition(screen, F3Data.DAY, RGB.F3_WHITE).readToThreeSpaces();
+            return Integer.parseInt(init.substring(init.indexOf("(") + 5, init.indexOf(")")));
         };
         Supplier<XY> getFacing = () -> {
             String init = new CharRecognition(screen, F3Data.FACING, RGB.F3_WHITE).readToThreeSpaces();
