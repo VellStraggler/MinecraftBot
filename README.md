@@ -8,6 +8,8 @@
 ## Computer Settings:
 - Make sure Fn Lock is on. You can test this by pressing the volume button.
 It should not change the volume. You can turn on Fn Lock by pressing Fn + esc
+- Make sure it is not on battery saver mode, or the GPU will not be used by
+Minecraft.
 ## Ideas not yet implemented:
 - movement
 - turning

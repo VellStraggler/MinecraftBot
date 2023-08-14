@@ -1,5 +1,6 @@
 package org.mcbot;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class App {
@@ -10,9 +11,7 @@ public class App {
         F3Data screenData = dataReader.readScreen();
 
         Movement movement = new Movement(screenData.coordinates, screenData.facing);
-        movement.moveForward();
-        Utils.sleep(2000);
-        movement.releaseAllKeys();
+        movement.moveForward(5);
     }
     public static void readOneBook() {
         BookReader reader = new BookReader();

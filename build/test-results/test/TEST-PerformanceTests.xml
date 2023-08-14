@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="PerformanceTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-08-13T01:34:11" hostname="DAVIDS_VOSSY" time="10.045">
+<testsuite name="PerformanceTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-08-14T10:13:30" hostname="DAVIDS_VOSSY" time="10.019">
   <properties/>
-  <testcase name="BaseFramerateForScreenshots()" classname="PerformanceTests" time="10.045"/>
-  <system-out><![CDATA[36.1 screenshots per second
+  <testcase name="BaseFramerateForScreenshots()" classname="PerformanceTests" time="10.019"/>
+  <system-out><![CDATA[56.5 screenshots per second
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

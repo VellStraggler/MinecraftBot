@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * in an F3Data Object
  */
 public class F3DataReader {
-    public final int VK_F3 = 114;
+    public static final int F3_KEY = 114;
     private F3Data data;
     private BufferedImage screen;
 
@@ -28,9 +28,9 @@ public class F3DataReader {
         // Detect if F3 mode is on. This checks the top left corner of 'Minecraft ver...etc'
         if (!RGB.F3_WHITE.equals(screen,7,7) && !RGB.F3_WHITE.equals(screen,4,4)) {
             // Press F3 if that isn't the case
-            Utils.pressAndReleaseKey(VK_F3);
+            Utils.pressAndReleaseKey(F3_KEY);
             // Might be too quick
-            Utils.sleep(100);
+            Utils.sleep(200);
             // Obviously we need a new screenshot now
             screen = Utils.takeScreenshot();
         }
@@ -44,14 +44,15 @@ public class F3DataReader {
             // Throw an error if the resolution is incorrect
             throw new RuntimeException("Screen resolution is not what it should be. Text read: " + resolutionLine);
         }
-        Utils.p(resolutionLine);
+        // PRINTING
+//        Utils.p(resolutionLine);
         // Read data starting at all given points
-        for (XY dataLineStart: F3Data.RIGHT_SIDE) {
-            Utils.p(new CharRecognition(screen, dataLineStart, RGB.F3_WHITE).readToImageEdge());
-        }
-        for (XY dataLineStart: F3Data.LEFT_SIDE) {
-            Utils.p(new CharRecognition(screen, dataLineStart, RGB.F3_WHITE).readToThreeSpaces());
-        }
+//        for (XY dataLineStart: F3Data.RIGHT_SIDE) {
+//            Utils.p(new CharRecognition(screen, dataLineStart, RGB.F3_WHITE).readToImageEdge());
+//        }
+//        for (XY dataLineStart: F3Data.LEFT_SIDE) {
+//            Utils.p(new CharRecognition(screen, dataLineStart, RGB.F3_WHITE).readToThreeSpaces());
+//        }
 
 // ------------- LAMBDAS ------------------------------------------
         Supplier<XYZ> getCoordinates = () -> {
@@ -69,6 +70,9 @@ public class F3DataReader {
         };
         Supplier<XY> getFacing = () -> {
             String init = new CharRecognition(screen, F3Data.FACING, RGB.F3_WHITE).readToThreeSpaces();
+            if (init == " ") {
+                return null;
+            }
             init = init.substring(init.indexOf(") (")+3);
             double x = Double.parseDouble(init.substring(0, init.indexOf(" ")));
             double y = Double.parseDouble(init.substring(init.indexOf("/ ")+2,init.indexOf(")")));
@@ -76,6 +80,10 @@ public class F3DataReader {
         };
         Supplier<XYZ> getTargetedBlock = () -> {
             String init = new CharRecognition(screen, F3Data.TARGETED_BLOCK, RGB.F3_WHITE).readToImageEdge();
+            // There isn't always a targeted block
+            if (init.equals(" ") || init.equals("")) {
+                return null;
+            }
             init = init.replaceAll(" ","");
             String[] ints = init.split(",");
             return new XYZ(Integer.parseInt(ints[0]),Integer.parseInt(ints[1]),Integer.parseInt(ints[2]));

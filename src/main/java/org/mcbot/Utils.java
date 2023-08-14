@@ -93,6 +93,14 @@ public class Utils {
     public static boolean clickHere(XY xy) {
         return clickHere(xy.x, xy.y);
     }
+    public static boolean moveMouseHere(int x, int y) {
+        try {
+            Robot clicker = new Robot();
+            clicker.mouseMove(x,y);
+            return true;
+        } catch (AWTException | RuntimeException e) { return false;}
+    }
+    public static boolean moveMouseHere(XY xy) { return moveMouseHere(xy.x, xy.y); }
 
     public static boolean pressAndReleaseKey(int inputEvent) {
         try {
