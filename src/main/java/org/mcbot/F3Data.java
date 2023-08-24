@@ -17,7 +17,7 @@ public class F3Data {
     public static XY RESOLUTION =   new XY(1006,196);
     public static XY BLOCK_TYPE =   new XY(1200,331); //new XY(1441,331);
     public static XY MINEABLE_HOW = new XY(1486,358); //FIXME: This variable is often not even present
-    public static XY DAY =          new XY(7, 493); //new XY(523,493); //taking the whole line
+    public static XY DAY =          new XY(7, 466); //new XY(7,493); //taking the whole line
     public static XY[] LEFT_SIDE = {COORDINATES, FACING, LIGHT_LEVEL, BIOME, DAY};
     public static XY[] RIGHT_SIDE = {TARGETED_BLOCK, BLOCK_TYPE, MINEABLE_HOW};
     public final XYZ coordinates;

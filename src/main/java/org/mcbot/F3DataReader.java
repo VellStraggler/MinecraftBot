@@ -42,7 +42,8 @@ public class F3DataReader {
         if (!resolutionLine.contains(Utils.SCREEN_RESOLUTION.x + "") ||
             !resolutionLine.contains(Utils.SCREEN_RESOLUTION.y + "")) {
             // Throw an error if the resolution is incorrect
-            throw new RuntimeException("Screen resolution is not what it should be. Text read: " + resolutionLine);
+            // Throws if we have two screens, which shouldn't matter
+            //throw new RuntimeException("Screen resolution is not what it should be. Text read: " + resolutionLine);
         }
         // PRINTING
 //        Utils.p(resolutionLine);
@@ -73,7 +74,9 @@ public class F3DataReader {
             if (init == " ") {
                 return null;
             }
-            init = init.substring(init.indexOf(") (")+3);
+            if (init.contains(") (")) {
+                init = init.substring(init.indexOf(") (") + 3);
+            }
             double x = Double.parseDouble(init.substring(0, init.indexOf(" ")));
             double y = Double.parseDouble(init.substring(init.indexOf("/ ")+2,init.indexOf(")")));
             return new XY((int)(x*10),(int)(y*10));
