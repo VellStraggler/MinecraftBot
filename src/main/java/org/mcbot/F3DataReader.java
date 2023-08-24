@@ -5,6 +5,7 @@ import org.mcbot.datatypes.XY;
 import org.mcbot.datatypes.XYZ;
 
 import java.awt.image.BufferedImage;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -14,101 +15,76 @@ import java.util.function.Supplier;
  */
 public class F3DataReader {
     public static final int F3_KEY = 114;
-    private F3Data data;
+    private static final int START_Y = 34;
+    private static final int END_Y = 628 + 1;
+    private static final int LEFT_X = 7;
+    // This is where data reading begins on the left side
+    private static final int RIGHT_START_Y = 304;
+    private static final int RIGHT_END_Y = 412 + 1;
+    private static final int RIGHT_X = 1006;
+    // For data reading on the right side. This skips computer information and DISPLAY resolution
     private BufferedImage screen;
 
-    /** Used to extract data from screenshots. **/
-    public F3DataReader() {}
+    /** Write down where everything is. This
+     * should only be initialized once. **/
+    public F3DataReader() {
+        F3Data f3data = readScreen();
+    }
 
     /** Takes a screenshot and returns the data from it **/
     public F3Data readScreen() {
+        Map<String, Object> data = new HashMap<>();
+
         // Take a screenshot or use the current one
         screen = Utils.takeScreenshot();
+        setF3On();
 
-        // Detect if F3 mode is on. This checks the top left corner of 'Minecraft ver...etc'
+        for (int y = START_Y; y < END_Y; y+= (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)) {
+            // read the first character of the line
+            char c = new CharRecognition(screen, new XY(LEFT_X, y), RGB.F3_WHITE).readChar();
+            for(int i = 0; i < F3Data.leftFirstChars.length; i++) {
+                char s = F3Data.leftFirstChars[i];
+                if (c == s) {
+                    // this is a line we want to read
+                    String line = new CharRecognition(screen, new XY(LEFT_X, y), RGB.F3_WHITE).readToThreeSpaces();
+                    // if this is ACTUALLY the line we want
+                    String key = F3Data.leftDataHeadings[i];
+                    if(line.contains(key)) {
+                        Object object;
+                        switch(key) {
+                            case ("XYZ"):
+                                double x1 = Double.parseDouble(line.substring(line.indexOf(' ')+1,line.indexOf('/')-1));
+                                line = line.substring(line.indexOf('/')+2);
+                                double y1 = Double.parseDouble(line.substring(0, line.indexOf('/')-1));
+                                double z1 = Double.parseDouble(line.substring(line.indexOf('/')+2));
+                                data.put("Coordinates", new XYZ(x1, y1, z1));
+                                break;
+                            case ("Facing"):
+                                data.put("Direction", line.substring(line.indexOf(' ')+1, line.indexOf('(') -1)); //i.e. north
+                                double x2 = Double.parseDouble(line.substring(line.indexOf(") (")+3, line.indexOf('/')-1));
+                                double y2 = Double.parseDouble(line.substring(line.indexOf('/') + 2,line.length()-2));
+                                data.put(key, new XY(x2, y2));
+                                break;
+                            case ("Local Difficulty"):
+                                // DAY
+                                data.put("Day", Integer.parseInt(line.substring(line.indexOf('(')+5,line.length()-2)));
+                        }
+                    }
+                }
+            }
+        }
+        return new F3Data(data);
+    }
+
+    private void setF3On() {
+        // Detect if F3 mode is on. This checks the top left corner of 'Minecraft 1.20.1...etc'
         if (!RGB.F3_WHITE.equals(screen,7,7) && !RGB.F3_WHITE.equals(screen,4,4)) {
             // Press F3 if that isn't the case
             Utils.pressAndReleaseKey(F3_KEY);
             // Might be too quick
-            Utils.sleep(200);
+            Utils.sleep(100);
             // Obviously we need a new screenshot now
             screen = Utils.takeScreenshot();
         }
-        // Check if there is a targeted block
-        boolean targetedBlock = (!Utils.isWhite(screen, 1186,301) && Utils.isWhite(screen,1189,304));
-        // Read the resolution first. Read the whole line and find the numbers within it
-        String resolutionLine = new CharRecognition(screen, F3Data.RESOLUTION, RGB.F3_WHITE)
-                                    .readToImageEdge();
-        if (!resolutionLine.contains(Utils.SCREEN_RESOLUTION.x + "") ||
-            !resolutionLine.contains(Utils.SCREEN_RESOLUTION.y + "")) {
-            // Throw an error if the resolution is incorrect
-            // Throws if we have two screens, which shouldn't matter
-            //throw new RuntimeException("Screen resolution is not what it should be. Text read: " + resolutionLine);
-        }
-        // PRINTING
-//        Utils.p(resolutionLine);
-        // Read data starting at all given points
-//        for (XY dataLineStart: F3Data.RIGHT_SIDE) {
-//            Utils.p(new CharRecognition(screen, dataLineStart, RGB.F3_WHITE).readToImageEdge());
-//        }
-//        for (XY dataLineStart: F3Data.LEFT_SIDE) {
-//            Utils.p(new CharRecognition(screen, dataLineStart, RGB.F3_WHITE).readToThreeSpaces());
-//        }
-
-// ------------- LAMBDAS ------------------------------------------
-        Supplier<XYZ> getCoordinates = () -> {
-            String init = new CharRecognition(screen, F3Data.COORDINATES, RGB.F3_WHITE).readToThreeSpaces();
-            int x = Integer.parseInt(init.substring(0, init.indexOf(" ")));
-            init = init.substring(init.indexOf(" ") + 1);
-            int y = Integer.parseInt(init.substring(0, init.indexOf(" ")));
-            init = init.substring(init.indexOf(" ") + 1);
-            int z = Integer.parseInt(init.substring(0, init.indexOf(" ")));
-            return new XYZ(x,y,z);
-        };
-        Supplier<Integer> getDay = () -> {
-            String init = new CharRecognition(screen, F3Data.DAY, RGB.F3_WHITE).readToThreeSpaces();
-            return Integer.parseInt(init.substring(init.indexOf("(") + 5, init.indexOf(")")));
-        };
-        Supplier<XY> getFacing = () -> {
-            String init = new CharRecognition(screen, F3Data.FACING, RGB.F3_WHITE).readToThreeSpaces();
-            if (init == " ") {
-                return null;
-            }
-            if (init.contains(") (")) {
-                init = init.substring(init.indexOf(") (") + 3);
-            }
-            double x = Double.parseDouble(init.substring(0, init.indexOf(" ")));
-            double y = Double.parseDouble(init.substring(init.indexOf("/ ")+2,init.indexOf(")")));
-            return new XY((int)(x*10),(int)(y*10));
-        };
-        Supplier<XYZ> getTargetedBlock = () -> {
-            String init = new CharRecognition(screen, F3Data.TARGETED_BLOCK, RGB.F3_WHITE).readToImageEdge();
-            // There isn't always a targeted block
-            if (init.equals(" ") || init.equals("")) {
-                return null;
-            }
-            init = init.replaceAll(" ","");
-            String[] ints = init.split(",");
-            return new XYZ(Integer.parseInt(ints[0]),Integer.parseInt(ints[1]),Integer.parseInt(ints[2]));
-        };
-        Supplier<Integer> getLightLevel = () -> {
-            String init = new CharRecognition(screen, F3Data.LIGHT_LEVEL, RGB.F3_WHITE).readToThreeSpaces();
-            return Integer.parseInt(init.substring(0, init.indexOf(" ")));
-        };
-// ------------ END OF LAMBDAS -----------------------------------
-
-        // Save it all to an F3Data object
-        F3Data data = new F3Data.Builder()
-                .withBiome(new CharRecognition(screen, F3Data.BIOME, RGB.F3_WHITE).readToThreeSpaces())
-                .withMineableHow(new CharRecognition(screen, F3Data.MINEABLE_HOW, RGB.F3_WHITE).readToImageEdge())
-                .withTargetedBlockType(new CharRecognition(screen, F3Data.BLOCK_TYPE, RGB.F3_WHITE).readToImageEdge())
-                .withCoordinates(getCoordinates.get())
-                .withDay(getDay.get())
-                .withFacing(getFacing.get())
-                .withTargetedBlock(getTargetedBlock.get())
-                .withLightLevel(getLightLevel.get())
-                .build();
-        // return data
-        return data;
     }
 }

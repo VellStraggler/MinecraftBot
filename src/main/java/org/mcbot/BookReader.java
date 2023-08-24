@@ -45,7 +45,7 @@ public class BookReader {
 
     public boolean hasNext() {
         if (image == null) takeScreenshot();
-        return (new RGB(image.getRGB(ARROW.x,ARROW.y)).isDark());
+        return (new RGB(image.getRGB((int)ARROW.x,(int)ARROW.y)).isDark());
     }
 
     /**
@@ -75,10 +75,10 @@ public class BookReader {
         // this assumes the column has text
         boolean blank = true;
         boolean duplicate = true;
-        int max = START_POINT.y + (LINE_HEIGHT * PIXEL_WIDTH * ROWS);
-        for(int y = START_POINT.y; y < max; y+= PIXEL_WIDTH) {
-            int currentRGB = image.getRGB(START_POINT.x, y);
-            if (lastImage.getRGB(START_POINT.x,y) != currentRGB) {
+        int max = (int)START_POINT.y + (LINE_HEIGHT * PIXEL_WIDTH * ROWS);
+        for(int y = (int)START_POINT.y; y < max; y+= PIXEL_WIDTH) {
+            int currentRGB = image.getRGB((int)START_POINT.x, y);
+            if (lastImage.getRGB((int)START_POINT.x,y) != currentRGB) {
                 duplicate = false;
             }
             if (new RGB(currentRGB).isDark()) blank = false;
@@ -110,16 +110,16 @@ public class BookReader {
                 boolean inkedLine = false;
                 for (int r = 0; r < CharArrays.HEIGHT; r++) {
                     // if found, a new character has been found
-                    if (isInkedPixel((column * PIXEL_WIDTH) + START_POINT.x,
-                                    (((row * LINE_HEIGHT) + r) * PIXEL_WIDTH) + START_POINT.y)) {
+                    if (isInkedPixel((column * PIXEL_WIDTH) + (int)START_POINT.x,
+                                    (((row * LINE_HEIGHT) + r) * PIXEL_WIDTH) + (int)START_POINT.y)) {
                         inkedLine = true;
                         blanks = 0;
                         break;
                     }
                 }
                 if(inkedLine) {
-                    char chr = processChar((column * PIXEL_WIDTH) + START_POINT.x,
-                                 ((row * LINE_HEIGHT) * PIXEL_WIDTH) + START_POINT.y);
+                    char chr = processChar((column * PIXEL_WIDTH) + (int)START_POINT.x,
+                                 ((row * LINE_HEIGHT) * PIXEL_WIDTH) + (int)START_POINT.y);
                     stringBuilder.append(chr);
                 }
                 if (blanks == 4) {

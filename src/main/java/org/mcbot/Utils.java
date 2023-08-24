@@ -91,7 +91,7 @@ public class Utils {
         } catch (AWTException | RuntimeException e) { return false;}
     }
     public static boolean clickHere(XY xy) {
-        return clickHere(xy.x, xy.y);
+        return clickHere((int)xy.x, (int)xy.y);
     }
     public static boolean moveMouseHere(int x, int y) {
         try {
@@ -100,7 +100,7 @@ public class Utils {
             return true;
         } catch (AWTException | RuntimeException e) { return false;}
     }
-    public static boolean moveMouseHere(XY xy) { return moveMouseHere(xy.x, xy.y); }
+    public static boolean moveMouseHere(XY xy) { return moveMouseHere((int)xy.x, (int)xy.y); }
 
     public static boolean pressAndReleaseKey(int inputEvent) {
         try {

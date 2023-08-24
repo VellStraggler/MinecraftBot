@@ -4,9 +4,7 @@ import org.mcbot.datatypes.Facing;
 import org.mcbot.datatypes.XY;
 import org.mcbot.datatypes.XYZ;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.LinkedList;
 import java.util.Stack;
 
 /**
@@ -22,23 +20,24 @@ public class Movement {
     private double sensitivity;
     private double sensitivityAccuracy;
     private Stack<Integer> keyStack;
-    private XY facingNums;
+    private XY facing;
     private XYZ coordinates;
+    private String direction;
 
-    private XY facingNumsGoal;
+    private XY facingGoal;
     private XYZ coordinatesGoal;
 
     /** Sets movement sensitivity to 1, and accuracy to 0.
      * Both of these will slowly be increased until the quickest,
      * most accurate movement tick is found.
-     * @param coordinates
-     * @param facingNums
      */
-    public Movement(XYZ coordinates, XY facingNums) {
-        this.coordinates = coordinates;
-        this.facingNums = facingNums;
+    public Movement(F3Data screenData) {
+        this.coordinates = (XYZ)screenData.get("Coordinates");
+        this.facing = (XY)screenData.get("Facing");
+        this.direction = (String)screenData.get("Direction");
+
         this.coordinatesGoal = new XYZ(coordinates);
-        this.facingNumsGoal = new XY(facingNums);
+        this.facingGoal = new XY(facing);
         this.sensitivity = 1.0;
         this.sensitivityAccuracy = 0.0;
         this.keyStack = new Stack<>();
@@ -46,11 +45,10 @@ public class Movement {
 
     /** Extracts what it needs from the given dataset,
      * facing and coordinates.
-     * @param data
      */
-    public void update(F3Data data) {
-        this.coordinates = data.coordinates;
-        this.facingNums = data.facing;
+    public void update(F3Data screenData) {
+        this.coordinates = (XYZ)screenData.get("Coordinates");
+        this.facing = (XY)screenData.get("Facing");
     }
 
     public boolean turnLeft(){
@@ -95,14 +93,14 @@ public class Movement {
     private void correction() {
         int x = 0;
         int y = 0;
-        if(facingNumsGoal.x < facingNums.x) {
+        if(facingGoal.x < facing.x) {
             x = -1;
-        } else if (facingNumsGoal.x > facingNums.x) {
+        } else if (facingGoal.x > facing.x) {
             x = 1;
         }
-        if(facingNumsGoal.y < facingNums.y) {
+        if(facingGoal.y < facing.y) {
             y = -1;
-        } else if (facingNumsGoal.y > facingNums.y) {
+        } else if (facingGoal.y > facing.y) {
             y = 1;
         }
         if (x == 0 && y != 0) {
@@ -137,8 +135,8 @@ public class Movement {
         }
         coordinatesGoal.x = coordinates.x + xChange;
         coordinatesGoal.z = coordinates.z + zChange;
-        facingNumsGoal.x = getGeneralFacingNum();
-        facingNumsGoal.y = 90;
+        facingGoal.x = getGeneralFacingNum();
+        facingGoal.y = 90;
 
         // Align with a compass direction
         // SLOWDOWN: This will slow down this Thread
@@ -152,23 +150,33 @@ public class Movement {
         // Move to goal
         moveForward();
         while (!coordinateReached()) {
-            correction();
             update(reader.readScreen());
         }
         releaseAllKeys();
 
     }
     public boolean closeEnough() {
-        int factor = 15;
-        if (facingNumsGoal.x == -1800) {
-            if (Math.abs(1800 - facingNums.x) <= factor) {
+        double factor = .5;
+        if (facingGoal.x == -180) {
+            if (Math.abs(180 - facing.x) <= factor) {
                 return true;
             }
         }
-        return (Math.abs(facingNumsGoal.x - facingNums.x) <= factor);
+        return (Math.abs(facingGoal.x - facing.x) <= factor);
     }
     private boolean coordinateReached() {
-        return coordinates.equals(coordinatesGoal);
+        if (Math.abs(coordinatesGoal.x - coordinates.x) < .5 &&
+            Math.abs(coordinatesGoal.y - coordinates.y) < .5 &&
+            Math.abs(coordinatesGoal.z - coordinates.z) < .5) {
+            return true;
+        } else {
+            return coordinates.equals(coordinatesGoal);
+        }
+    }
+    public void centerOnBlock() {
+        // hold shift and get enough in the center of this coordinate to
+        // fit through a corridor.
+        // TODO
     }
     /** Simply press the forward key if it
      * hasn't already been pressed**/
@@ -190,25 +198,17 @@ public class Movement {
      * @return
      */
     public Facing getFacing() {
-        if(facingNums.x > 1350 || facingNums.x < -1351) {
-            return Facing.NORTH;
-        } else if (facingNums.x > 450) {
-            return Facing.WEST;
-        } else if (facingNums.x > -451) {
-            return Facing.SOUTH;
-        } else {
-            return Facing.EAST;
-        }
+        return Facing.valueOf(direction.toUpperCase());
     }
     /**
      * Gives the rotational number of the general direction
      * the player is facing.
      */
     public int getGeneralFacingNum() {
-        if (facingNums.x < 0) {
-            return ((facingNums.x - 450) / 900) * 900;
+        if (facing.x < 0) {
+            return (int)((facing.x - 45) / 90) * 90;
         } else {
-            return ((facingNums.x + 450) / 900) * 900;
+            return (int)((facing.x + 45) / 90) * 90;
         }
     }
 

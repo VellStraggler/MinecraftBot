@@ -4,14 +4,14 @@ package org.mcbot.datatypes;
  * Simple, modifiable coordinate object
  */
 public class XY {
-    public int x;
-    public int y;
+    public double x;
+    public double y;
     public XY() {}
     public XY(XY other) {
         this.x = other.x;
         this.y = other.y;
     }
-    public XY(int x, int y) {
+    public XY(double x, double y) {
         this.x = x;
         this.y = y;
     }

@@ -1,13 +1,13 @@
 package org.mcbot.datatypes;
 
 public class XYZ extends XY{
-    public int z;
+    public double z;
     public XYZ(XYZ other) {
         this.x = other.x;
         this.y = other.y;
         this.z = other.z;
     }
-    public XYZ(int x, int y, int z) {
+    public XYZ(double x, double y, double z) {
         super(x,y);
         this.z = z;
     }

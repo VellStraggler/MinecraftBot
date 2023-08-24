@@ -133,10 +133,10 @@ public class CharRecognition {
         for (int charC = 0; charC < CharArrays.WIDTH; charC++) {
             // Assume the column is empty until proven otherwise
             boolean emptyCol = true;
-            int xPixel = ((col + charC) * PIXEL_WIDTH) + startingPoint.x;
+            int xPixel = ((col + charC) * PIXEL_WIDTH) + (int)startingPoint.x;
             for (int charR = 0; charR < CharArrays.HEIGHT; charR++) {
                 // We have the base starting point row plus the new line row we're on plus the pixel row of the char
-                int yPixel = startingPoint.y + (((row * NEW_LINE) + charR) * PIXEL_WIDTH);
+                int yPixel = (int)startingPoint.y + (((row * NEW_LINE) + charR) * PIXEL_WIDTH);
                 if (new RGB(image.getRGB(xPixel, yPixel)).equals(textColor)) {
                     array[charR][charC] = true;
                     emptyCol = false;
