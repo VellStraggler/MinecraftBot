@@ -1,7 +1,6 @@
 package org.mcbot;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import org.mcbot.skills.BookReader;
 
 public class App {
     public static void main(String[] args) {

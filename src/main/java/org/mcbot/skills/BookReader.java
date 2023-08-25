@@ -1,5 +1,8 @@
-package org.mcbot;
+package org.mcbot.skills;
 
+import org.mcbot.CharArrays;
+import org.mcbot.CharRecognition;
+import org.mcbot.Utils;
 import org.mcbot.datatypes.RGB;
 import org.mcbot.datatypes.XY;
 
