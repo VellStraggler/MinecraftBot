@@ -5,6 +5,7 @@ import org.mcbot.datatypes.XY;
 import org.mcbot.datatypes.XYZ;
 
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
 import java.util.Stack;
 
 /**
@@ -15,17 +16,22 @@ import java.util.Stack;
 public class Movement {
     public static XY SCREEN_CENTER = new XY(Utils.SCREEN_RESOLUTION.x/2, Utils.SCREEN_RESOLUTION.y/2);
     private static final int FORWARD_KEY = KeyEvent.VK_W;
-
+    private static final int RIGHT_KEY = KeyEvent.VK_D;
+    private static final int LEFT_KEY = KeyEvent.VK_A;
+    private static final int BACKWARD_KEY = KeyEvent.VK_S;
+    private static final int SHIFT_KEY = KeyEvent.VK_SHIFT;
 
     private double sensitivity;
     private double sensitivityAccuracy;
     private Stack<Integer> keyStack;
     private XY facing;
     private XYZ coordinates;
-    private String direction;
+    private Facing direction;
 
     private XY facingGoal;
+    // facingGoal.y is widely ignored rn
     private XYZ coordinatesGoal;
+    private F3DataReader reader;
 
     /** Sets movement sensitivity to 1, and accuracy to 0.
      * Both of these will slowly be increased until the quickest,
@@ -34,28 +40,45 @@ public class Movement {
     public Movement(F3Data screenData) {
         this.coordinates = (XYZ)screenData.get("Coordinates");
         this.facing = (XY)screenData.get("Facing");
-        this.direction = (String)screenData.get("Direction");
+        this.direction = Facing.valueOf(((String)screenData.get("Direction")).toUpperCase());
 
         this.coordinatesGoal = new XYZ(coordinates);
         this.facingGoal = new XY(facing);
         this.sensitivity = 1.0;
         this.sensitivityAccuracy = 0.0;
         this.keyStack = new Stack<>();
+        this.reader = new F3DataReader();
     }
 
     /** Extracts what it needs from the given dataset,
-     * facing and coordinates.
+     * facing and coordinates. Takes a screenshot on its OWN.
      */
-    public void update(F3Data screenData) {
+    public void update() {
+        F3Data screenData = reader.readScreen();
         this.coordinates = (XYZ)screenData.get("Coordinates");
         this.facing = (XY)screenData.get("Facing");
+        this.direction = Facing.valueOf(((String)screenData.get("Direction")).toUpperCase());
     }
 
-    public boolean turnLeft(){
-        return true;
+    public void turnLeft(){
+        facingGoal.x = (getGeneralFacingNum() - 90);
+        if (facingGoal.x < -180) {
+            facingGoal.x = 90;
+        }
+        while(!closeEnough()) {
+            correction();
+            update();
+        }
     }
-    public boolean turnRight(){
-        return true;
+    public void turnRight(){
+        facingGoal.x = (getGeneralFacingNum() + 90);
+        if (facingGoal.x > 90) {
+            facingGoal.x = -180;
+        }
+        while(!closeEnough()) {
+            correction();
+            update();
+        }
     }
     public void turnPixels(int x, int y) {
         int newX; int newY;
@@ -91,19 +114,16 @@ public class Movement {
         }
     }
     private void correction() {
-        int x = 0;
-        int y = 0;
+        int x = 0; int y = 0;
         if(facingGoal.x < facing.x) {
             x = -1;
         } else if (facingGoal.x > facing.x) {
             x = 1;
-        }
-        if(facingGoal.y < facing.y) {
+        } if(facingGoal.y < facing.y) {
             y = -1;
         } else if (facingGoal.y > facing.y) {
             y = 1;
-        }
-        if (x == 0 && y != 0) {
+        } if (x == 0 && y != 0) {
             turnYPixels(y);
         } else if (y == 0 && x != 0) {
             turnXPixels(x);
@@ -113,7 +133,8 @@ public class Movement {
     }
 
     /**
-     * Initializes moving forward.
+     * aligns where player is looking and standing,
+     * and then moves the given amount forward
      * @param amount
      */
     public void moveForward(int amount) {
@@ -133,24 +154,23 @@ public class Movement {
             default: //NORTH
                 zChange = -amount;
         }
-        coordinatesGoal.x = coordinates.x + xChange;
-        coordinatesGoal.z = coordinates.z + zChange;
         facingGoal.x = getGeneralFacingNum();
-        facingGoal.y = 90;
 
         // Align with a compass direction
-        // SLOWDOWN: This will slow down this Thread
-        F3DataReader reader = new F3DataReader();
-        int i = 0;
         while(!closeEnough()) {
             correction();
-            update(reader.readScreen());
+            update();
         }
+        // Align to center of block
+        centerOnBlock();
+        // Stay on target!
+        coordinatesGoal.x = coordinates.x + xChange;
+        coordinatesGoal.z = coordinates.z + zChange;
 
         // Move to goal
         moveForward();
-        while (!coordinateReached()) {
-            update(reader.readScreen());
+        while (!coordinateReached(1)) {
+            update();
         }
         releaseAllKeys();
 
@@ -158,32 +178,95 @@ public class Movement {
     public boolean closeEnough() {
         double factor = .5;
         if (facingGoal.x == -180) {
-            if (Math.abs(180 - facing.x) <= factor) {
+            if (Math.abs(180 - facing.x) < factor) {
                 return true;
             }
         }
-        return (Math.abs(facingGoal.x - facing.x) <= factor);
+        return (Math.abs(facingGoal.x - facing.x) < factor);
     }
+    // The default accuracy is within .5
     private boolean coordinateReached() {
-        if (Math.abs(coordinatesGoal.x - coordinates.x) < .5 &&
-            Math.abs(coordinatesGoal.y - coordinates.y) < .5 &&
-            Math.abs(coordinatesGoal.z - coordinates.z) < .5) {
+        return coordinateReached(.5);
+    }
+    private boolean coordinateReached(double factor) {
+        if (Math.abs(coordinatesGoal.x - coordinates.x) < factor &&
+            Math.abs(coordinatesGoal.y - coordinates.y) < factor &&
+            Math.abs(coordinatesGoal.z - coordinates.z) < factor) {
             return true;
         } else {
             return coordinates.equals(coordinatesGoal);
         }
     }
     public void centerOnBlock() {
-        // hold shift and get enough in the center of this coordinate to
-        // fit through a corridor.
-        // TODO
+        // hold shift and get mostly centered
+        Utils.pressKey(SHIFT_KEY);
+        keyStack.add(SHIFT_KEY);
+        double rangeOfMiddle = .2;
+        // Set the goal
+        coordinatesGoal.x = ((int)coordinates.x) - .5;
+        coordinatesGoal.y = coordinates.y;
+        coordinatesGoal.z = ((int)coordinates.z) - .5;
+        // how will the coordinates change if you go forward or right
+        int xUp; int xDown;
+        int zUp; int zDown;
+        switch (direction) {
+            case NORTH:
+                zDown = FORWARD_KEY;
+                zUp = BACKWARD_KEY;
+                xDown = LEFT_KEY;
+                xUp = RIGHT_KEY;
+                break;
+            case EAST:
+                zDown = LEFT_KEY;
+                zUp = RIGHT_KEY;
+                xDown = BACKWARD_KEY;
+                xUp = FORWARD_KEY;
+                break;
+            case SOUTH:
+                zUp = FORWARD_KEY;
+                zDown = BACKWARD_KEY;
+                xUp = LEFT_KEY;
+                xDown = RIGHT_KEY;
+                break;
+            default: // WEST
+                zUp = LEFT_KEY;
+                zDown = RIGHT_KEY;
+                xUp = BACKWARD_KEY;
+                xDown = FORWARD_KEY;
+                break;
+        }
+        while(!coordinateReached(rangeOfMiddle)) {
+            releaseAllKeys();
+            pressKey(SHIFT_KEY);
+            // I don't know why xDown and xUp are switched, really
+            if (coordinatesGoal.x > coordinates.x + rangeOfMiddle)
+                pressKey(xUp);
+            else if (coordinatesGoal.x < coordinates.x - rangeOfMiddle)
+                pressKey(xDown);
+            if (coordinatesGoal.z > coordinates.z + rangeOfMiddle)
+                pressKey(zUp);
+            else if (coordinatesGoal.z < coordinates.z - rangeOfMiddle)
+                pressKey(zDown);
+            update();
+        }
+        releaseAllKeys();
+        Utils.sleep(200);
+
     }
     /** Simply press the forward key if it
      * hasn't already been pressed**/
     private void moveForward() {
-        if(!keyStack.contains(FORWARD_KEY)) {
-            Utils.pressKey(FORWARD_KEY);
-            keyStack.add(FORWARD_KEY);
+        pressKey(FORWARD_KEY);
+    }
+    private void pressKey(int keyValue) {
+        if(!keyStack.contains(keyValue)) {
+            Utils.pressKey(keyValue);
+            keyStack.add(keyValue);
+        }
+    }
+    private void releaseLatestKey() {
+        if (!keyStack.isEmpty()) {
+            Utils.releaseKey(keyStack.pop());
         }
     }
     private void releaseAllKeys() {
@@ -194,15 +277,13 @@ public class Movement {
 
     /**
      * gives the general direction the player is facing
-     * based on rotation numbers (facingNums).
-     * @return
      */
     public Facing getFacing() {
-        return Facing.valueOf(direction.toUpperCase());
+        return direction;
     }
     /**
      * Gives the rotational number of the general direction
-     * the player is facing.
+     * the player is facing. -180 to 90
      */
     public int getGeneralFacingNum() {
         if (facing.x < 0) {

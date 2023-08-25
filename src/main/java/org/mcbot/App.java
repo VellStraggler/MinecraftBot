@@ -11,7 +11,10 @@ public class App {
         F3Data screenData = dataReader.readScreen();
 
         Movement movement = new Movement(screenData);
-        movement.moveForward(10);
+        for(int i = 0; i < 4; i ++) {
+            movement.moveForward(3);
+            movement.turnLeft();
+        }
     }
     public static void readOneBook() {
         BookReader reader = new BookReader();
