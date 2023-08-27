@@ -17,7 +17,7 @@ public class F3Data {
     //                                                             ^         day, ignore difficulty
     //                                                             direction and facing
     public static Character[] leftFirstChars = new Character[]{'X', 'F', 'L'};
-    public static String[] rightDataHeadings = new String[]{"Targeted Block", "minecraft"};
+    public static String[] rightDataHeadings = new String[]{"Targeted", "minecraft"};
     //                                                                         block type
     public static Character[] rightFirstChars = new Character[]{'T', 'm'};
     private Map<String, Object> data;
@@ -32,7 +32,11 @@ public class F3Data {
         return null;
     }
     public String toString() {
-        return "";
+        StringBuilder builder = new StringBuilder();
+        for(String key: data.keySet()) {
+            builder.append(key + ": " + data.get(key) + "\n");
+        }
+        return builder.toString();
     }
 
 }

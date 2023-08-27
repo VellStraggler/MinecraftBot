@@ -90,6 +90,24 @@ public class Utils {
             return true;
         } catch (AWTException | RuntimeException e) { return false;}
     }
+    public static boolean clickHere() {
+        try {
+            Robot clicker = new Robot();
+            clicker.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+            Utils.sleep(50);
+            clicker.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+            return true;
+        } catch (AWTException | RuntimeException e) { return false;}
+    }
+    public static boolean rightClickHere() {
+        try {
+            Robot clicker = new Robot();
+            clicker.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+            Utils.sleep(50);
+            clicker.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+            return true;
+        } catch (AWTException | RuntimeException e) { return false;}
+    }
     public static boolean clickHere(XY xy) {
         return clickHere((int)xy.x, (int)xy.y);
     }
@@ -106,6 +124,7 @@ public class Utils {
         try {
             Robot clicker = new Robot();
             clicker.keyPress(inputEvent);
+            Utils.sleep(20);
             clicker.keyRelease(inputEvent);
             return true;
         } catch (AWTException | RuntimeException e) {return false;}

@@ -15,15 +15,16 @@ import java.util.function.Supplier;
  */
 public class F3DataReader {
     public static final int F3_KEY = 114;
-    private static final int START_Y = 34;
+    private static final int START_Y = 34;// + 2; //windowed mode?
     private static final int END_Y = 628 + 1;
     private static final int LEFT_X = 7;
     // This is where data reading begins on the left side
-    private static final int RIGHT_START_Y = 304;
+    private static final int RIGHT_START_Y = 304;//333;
     private static final int RIGHT_END_Y = 412 + 1;
     private static final int RIGHT_X = 1006;
     // For data reading on the right side. This skips computer information and DISPLAY resolution
     private BufferedImage screen;
+    public F3Data data;
 
     /** Write down where everything is. This
      * should only be initialized once. **/
@@ -73,7 +74,44 @@ public class F3DataReader {
                 }
             }
         }
-        return new F3Data(data);
+        for (int y = RIGHT_START_Y; y < RIGHT_END_Y; y+= (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)) {
+            // read the line we want to read
+            String line = new CharRecognition(screen, new XY(RIGHT_X, y), RGB.F3_WHITE).readToImageEdge();
+            boolean found = false;
+            for(int i = 0; i < F3Data.rightFirstChars.length; i++) {
+                char s = F3Data.rightFirstChars[i];
+                if (line.charAt(0) == s || (line.length() > 1 && line.charAt(1) == s)) {
+                    // if this is ACTUALLY the line we want
+                    String key = F3Data.rightDataHeadings[i];
+                    if(line.contains(key)) {
+                        Object object;
+                        switch(key) {
+                            case ("Targeted"):
+                                found = true;
+                                double x1 = Integer.parseInt(line.substring(line.indexOf(':') + 2, line.indexOf(',')));
+                                line = line.substring(line.indexOf(',') + 2);
+                                double y1 = Integer.parseInt(line.substring(0, line.indexOf(',')));
+                                double z1 = Integer.parseInt(line.substring(line.indexOf(',')+2).replaceAll(" ",""));
+                                data.put("Target Coordinates", new XYZ(x1, y1, z1));
+                                // the targeted block type is always right under this
+                                line = new CharRecognition(screen, new XY(RIGHT_X, y + (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)), RGB.F3_WHITE).readToImageEdge();
+                                data.put("Target Block", line.substring(line.indexOf(':')+1));
+                                break;
+                        }
+                    }
+                }
+            }
+            // We are adding everything just in case
+            line = line.replace("#","");
+            line = line.replace("minecraft","");
+            line = line.replaceAll(" ","");
+            if (line.contains(":")) {
+                data.put(line.substring(0,line.indexOf(':')),
+                        line.substring(line.indexOf(':')+1));
+            }
+        }
+        this.data = new F3Data(data);
+        return this.data;
     }
 
     private void setF3On() {
