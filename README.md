@@ -12,22 +12,22 @@
 It should not change the volume. You can turn on Fn Lock by pressing Fn + esc
 - Make sure it is not on battery saver mode, or the GPU will not be used by
 Minecraft.
-## Ideas not yet implemented:
-- decision-making
-- any actions at all
+## Ideas to be implemented (in order):
+1. Mining
+2. Path-finding
+3. Long-jumping
+4. Swimming
+5. Attacking
+6. Interactable Class
+7. Decision-making Class
+8. Directions Class
+9. Updated Item Class
 - action affirmation
 - retrieving items from known locations
-- path-finding
 - building
 - crafting
-- farming
 - attacking
-- mining
-- jumping
 - build schematics
-- Correcting x and y rotation at the same time
-- Right-side F3 Data
 ## Ideas that are out of scope:
-- Diagonal movement
 - Use of vehicles
 - Picking the best available tools
