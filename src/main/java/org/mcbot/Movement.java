@@ -17,8 +17,8 @@ public class Movement {
     private static final int FORWARD_KEY = KeyEvent.VK_W;
     private static final int RIGHT_KEY = KeyEvent.VK_D;
     private static final int LEFT_KEY = KeyEvent.VK_A;
-    private static final int BACKWARD_KEY = KeyEvent.VK_S;
-    private static final int SHIFT_KEY = KeyEvent.VK_SHIFT;
+    public static final int BACKWARD_KEY = KeyEvent.VK_S;
+    public static final int SHIFT_KEY = KeyEvent.VK_SHIFT;
     private static final int JUMP_KEY = KeyEvent.VK_SPACE;
     private Blocks blocks;
     private Robot input;
@@ -323,7 +323,7 @@ public class Movement {
     private void moveForward() {
         pressKey(FORWARD_KEY);
     }
-    private void pressKey(int keyValue) {
+    public void pressKey(int keyValue) {
         if(!keyStack.contains(keyValue)) {
             input.keyPress(keyValue);
             keyStack.add(keyValue);
@@ -397,6 +397,9 @@ public class Movement {
         input.keyRelease(inputEvent);
     }
     public void releaseKey(int inputEvent){
+        if (keyStack.contains(inputEvent)) {
+            keyStack.remove(inputEvent);
+        }
         input.keyRelease(inputEvent);
     }
 
