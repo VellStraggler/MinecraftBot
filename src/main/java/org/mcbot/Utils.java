@@ -13,7 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Static-only class that holds functions for things like keystrokes, screenshots,
+ * Static-only class that holds functions for things like screenshots
  * and saving data to the hard drive
  */
 public class Utils {
@@ -74,75 +74,6 @@ public class Utils {
             return null;
         }
     }
-
-    /**
-     * Move the mouse to a particular point on screen. Returns true if successful
-     * @param x
-     * @param y
-     * @return
-     */
-    public static boolean clickHere(int x, int y) {
-        try {
-            Robot clicker = new Robot();
-            clicker.mouseMove(x,y);
-            clicker.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-            clicker.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-            return true;
-        } catch (AWTException | RuntimeException e) { return false;}
-    }
-    public static boolean clickHere() {
-        try {
-            Robot clicker = new Robot();
-            clicker.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-            Utils.sleep(50);
-            clicker.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-            return true;
-        } catch (AWTException | RuntimeException e) { return false;}
-    }
-    public static boolean rightClickHere() {
-        try {
-            Robot clicker = new Robot();
-            clicker.mousePress(InputEvent.BUTTON3_DOWN_MASK);
-            Utils.sleep(50);
-            clicker.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
-            return true;
-        } catch (AWTException | RuntimeException e) { return false;}
-    }
-    public static boolean clickHere(XY xy) {
-        return clickHere((int)xy.x, (int)xy.y);
-    }
-    public static boolean moveMouseHere(int x, int y) {
-        try {
-            Robot clicker = new Robot();
-            clicker.mouseMove(x,y);
-            return true;
-        } catch (AWTException | RuntimeException e) { return false;}
-    }
-    public static boolean moveMouseHere(XY xy) { return moveMouseHere((int)xy.x, (int)xy.y); }
-
-    public static boolean pressAndReleaseKey(int inputEvent) {
-        try {
-            Robot clicker = new Robot();
-            clicker.keyPress(inputEvent);
-            Utils.sleep(20);
-            clicker.keyRelease(inputEvent);
-            return true;
-        } catch (AWTException | RuntimeException e) {return false;}
-    }
-    public static boolean pressKey(int inputEvent){
-        try {
-            Robot clicker = new Robot();
-            clicker.keyPress(inputEvent);
-            return true;
-        } catch (AWTException | RuntimeException e) {return false;}
-    }
-    public static boolean releaseKey(int inputEvent){
-        try {
-            Robot clicker = new Robot();
-            clicker.keyRelease(inputEvent);
-            return true;
-        } catch (AWTException | RuntimeException e) {return false;}
-    }
     /**
      * Simply checks to see if a given pixel is white on the given screen.
      * @param image
@@ -159,5 +90,19 @@ public class Utils {
         } catch (InterruptedException e) {
             p("Unable to sleep? " + e.getMessage());
         }
+    }
+
+    /**
+     * Only use this in cases where the Movement class has not been instantiated
+     * (such as when F3DataReader needs to turn on the data screen)
+     * @param inputEvent
+     */
+    public static void pressAndReleaseKey(int inputEvent) {
+        try {
+            Robot input = new Robot();
+            input.keyPress(inputEvent);
+            sleep(40);
+            input.keyRelease(inputEvent);
+        } catch (AWTException ignored) {}
     }
 }

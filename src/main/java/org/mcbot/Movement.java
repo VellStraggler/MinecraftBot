@@ -2,6 +2,8 @@ package org.mcbot;
 
 import org.mcbot.datatypes.*;
 
+import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Stack;
 
@@ -19,6 +21,7 @@ public class Movement {
     private static final int SHIFT_KEY = KeyEvent.VK_SHIFT;
     private static final int JUMP_KEY = KeyEvent.VK_SPACE;
     private Blocks blocks;
+    private Robot input;
 
     private Stack<Integer> keyStack;
     private XY facing;
@@ -45,6 +48,12 @@ public class Movement {
         this.keyStack = new Stack<>();
         this.reader = dataReader;
         this.blocks = blocks;
+
+        try {
+            this.input = new Robot();
+        } catch (AWTException e) {
+            throw new RuntimeException("Keyboard input not working for some reason. " + e.getMessage());
+        }
     }
 
     /** Extracts what it needs from the given dataset,
@@ -64,20 +73,14 @@ public class Movement {
         if (facingGoal.x < -180) {
             facingGoal.x = 90;
         }
-        while(!closeEnough()) {
-            correction();
-            update();
-        }
+        alignToDirection();
     }
     public void turnRight(){
         facingGoal.x = (getGeneralFacingNum() + 90);
         if (facingGoal.x > 180) {
             facingGoal.x = -90;
         }
-        while(!closeEnough()) {
-            correction();
-            update();
-        }
+        alignToDirection();
     }
     public void turnPixels(int x, int y) {
         int newX; int newY;
@@ -91,15 +94,15 @@ public class Movement {
         } else {
             newY = 7;
         }
-        Utils.moveMouseHere(newX, newY);
+        moveMouseHere(newX, newY);
     }
     public void turnXPixels(int amount) {
         // x is between 18 and 19
         // y is between 6 and 7
         if (amount < 0) {
-            Utils.moveMouseHere(18 + amount, 7);
+            moveMouseHere(18 + amount, 7);
         } else {
-            Utils.moveMouseHere(19 + amount, 7);
+            moveMouseHere(19 + amount, 7);
         }
     }
     /** should NOT be used in tangent with turnXPixels **/
@@ -107,9 +110,9 @@ public class Movement {
         // x is between 18 and 19
         // y is between 6 and 7
         if (amount < 0) {
-            Utils.moveMouseHere(19, 6 + amount);
+            moveMouseHere(19, 6 + amount);
         } else {
-            Utils.moveMouseHere(19, 7 + amount);
+            moveMouseHere(19, 7 + amount);
         }
     }
     private void correction() {
@@ -118,6 +121,9 @@ public class Movement {
         // Set up to turn right if the goal is north and it's on your right
         if (facingGoal.x == -180 && facing.x > 0) {
             facingGoal.x = 180;
+        }
+        if (facingGoal.x == 180 && facing.x < 0) {
+            facingGoal.x = -180;
         }
 
         if(facingGoal.x < facing.x) {
@@ -141,21 +147,30 @@ public class Movement {
             turnYPixels(y);
         } else if (y == 0 && x != 0) {
             turnXPixels(x);
-        } else if (y != 0 && x != 0 ) {
+        } else if (y != 0) {
             turnPixels(x, y);
         }
     }
+
+    /** Useful y-rotations -
+     * 40: strip-mining
+     * 81: bridging
+     * @param y
+     */
     public void setYFacing(int y) {
         facingGoal.y = y;
     }
 
+    public void moveForward(int amount) {
+        moveForward(amount, true);
+    }
     /**
      * aligns where player is looking and standing,
      * and then moves the given amount forward.
      * Does not account for y-level, and will jump if need be
      * @param amount
      */
-    public void moveForward(int amount) {
+    public void moveForward(int amount, boolean jumpingAllowed) {
         // Set goal
         int xChange = 0;
         int zChange = 0;
@@ -176,10 +191,7 @@ public class Movement {
         //facingGoal.y = 55; //This points to the 3 blocks directly in front of you
 
         // Align with a compass direction
-        while(!closeEnough()) {
-            correction();
-            update();
-        }
+        alignToDirection();
         // Align to center of block
         centerOnBlock();
         // Stay on target!
@@ -190,14 +202,20 @@ public class Movement {
         moveForward();
         while (!coordinateReached()) {
             update();
-            if (shouldJumpThere()) jump();
+            if (shouldJumpThere() && jumpingAllowed) jump();
         }
         releaseAllKeys();
         centerOnBlock(); // won't matter if we do it twice
 
     }
+    public void alignToDirection() {
+        while(!closeEnough()) {
+            correction();
+            update();
+        }
+    }
     private void jump() {
-        Utils.pressAndReleaseKey(JUMP_KEY);
+        pressAndReleaseKey(JUMP_KEY);
     }
     private boolean shouldJumpThere() {
         double y = ((XYZ)(reader.data.get("Target Coordinates"))).y;
@@ -211,7 +229,7 @@ public class Movement {
         return false;
     }
     private boolean xCloseEnough() {
-        double factor = 1;
+        double factor = 2;
         if (facingGoal.x == -180) {
             if (Math.abs(180 - facing.x) < factor) {
                 return true;
@@ -241,9 +259,8 @@ public class Movement {
     }
     public void centerOnBlock() {
         // hold shift and get mostly centered
-        Utils.pressKey(SHIFT_KEY);
-        keyStack.add(SHIFT_KEY);
-        double rangeOfMiddle = .2;
+        pressKey(SHIFT_KEY);
+        double rangeOfMiddle = .15; //down from .2
         // Set the goal
         coordinatesGoal.x = ((int)coordinates.x) - .5;
         coordinatesGoal.y = coordinates.y;
@@ -285,7 +302,7 @@ public class Movement {
                 pressKey(JUMP_KEY);
                 Utils.sleep(25);
                 start += 2000L;
-            };
+            }
             // I don't know why xDown and xUp are switched, really
             if (coordinatesGoal.x > coordinates.x + rangeOfMiddle)
                 pressKey(xUp);
@@ -298,7 +315,7 @@ public class Movement {
             update();
         }
         releaseAllKeys();
-        Utils.sleep(50);
+        Utils.sleep(150);
 
     }
     /** Simply press the forward key if it
@@ -308,18 +325,18 @@ public class Movement {
     }
     private void pressKey(int keyValue) {
         if(!keyStack.contains(keyValue)) {
-            Utils.pressKey(keyValue);
+            input.keyPress(keyValue);
             keyStack.add(keyValue);
         }
     }
     private void releaseLatestKey() {
         if (!keyStack.isEmpty()) {
-            Utils.releaseKey(keyStack.pop());
+            releaseKey(keyStack.pop());
         }
     }
     private void releaseAllKeys() {
         while(!keyStack.isEmpty()) {
-            Utils.releaseKey(keyStack.pop());
+            releaseKey(keyStack.pop());
         }
     }
 
@@ -339,6 +356,48 @@ public class Movement {
         } else {
             return (int)((facing.x + 45) / 90) * 90;
         }
+    }
+
+    /**
+     * Move the mouse to a particular point on screen.
+     * @param x : pixel x coordinate on screen
+     * @param y : pixel y coordinate on screen
+     */
+    public void clickHere(int x, int y) {
+        moveMouseHere(x,y);
+        clickHere();
+    }
+    public void clickHere() {
+        input.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        Utils.sleep(40);
+        input.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
+    public void holdClick() {
+        input.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+    }
+    public void releaseClick() {
+        input.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
+    public void rightClickHere() {
+        input.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+        Utils.sleep(50);
+        input.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+    }
+    public void clickHere(XY xy) {
+        clickHere((int)xy.x, (int)xy.y);
+    }
+    public void moveMouseHere(int x, int y) {
+        input.mouseMove(x,y);
+    }
+    public void moveMouseHere(XY xy) { moveMouseHere((int)xy.x, (int)xy.y); }
+
+    public void pressAndReleaseKey(int inputEvent) {
+        input.keyPress(inputEvent);
+        Utils.sleep(20);
+        input.keyRelease(inputEvent);
+    }
+    public void releaseKey(int inputEvent){
+        input.keyRelease(inputEvent);
     }
 
 }

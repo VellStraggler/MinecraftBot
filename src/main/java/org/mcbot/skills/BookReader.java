@@ -2,6 +2,7 @@ package org.mcbot.skills;
 
 import org.mcbot.CharArrays;
 import org.mcbot.CharRecognition;
+import org.mcbot.Movement;
 import org.mcbot.Utils;
 import org.mcbot.datatypes.RGB;
 import org.mcbot.datatypes.XY;
@@ -26,8 +27,24 @@ public class BookReader {
     private int column = 0;
     private int blanks = 0;
 
-    public BookReader() {}
+    private Movement movement;
 
+    public BookReader(Movement movement) {
+        this.movement = movement;
+    }
+
+    /**
+     * Call this once a book is already opened. This will copy every page
+     * and save it using saveBook().
+     */
+    public void readOneBook() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(readThisPage()).append("\n");
+        while (hasNext()) {
+            stringBuilder.append(readThisPage()).append("\n");
+        }
+        saveBook(stringBuilder.toString());
+    }
     public void saveBook(String text)  {
         Utils.saveToTextFile(text, "books/book");
     }
@@ -96,7 +113,8 @@ public class BookReader {
      */
     public boolean nextPage() {
         if (hasNext()) {
-            return Utils.clickHere(ARROW);
+            movement.clickHere(ARROW);
+            return true;
         }
         return false;
     }

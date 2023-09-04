@@ -14,6 +14,13 @@ import java.util.function.Supplier;
  * in an F3Data Object
  */
 public class F3DataReader {
+    // Usable data keys:
+    // - Coordinates
+    // - Direction
+    // - Day
+    // - Target Coordinates
+    // - Target Block
+
     public static final int F3_KEY = 114;
     private static final int START_Y = 34;// + 2; //windowed mode?
     private static final int END_Y = 628 + 1;

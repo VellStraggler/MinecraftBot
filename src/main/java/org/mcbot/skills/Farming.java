@@ -4,9 +4,6 @@ import org.mcbot.F3DataReader;
 import org.mcbot.Movement;
 import org.mcbot.Utils;
 
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-
 public class Farming {
     private static final int HOE = 1;
     private static final int SEED = 2;
@@ -40,24 +37,24 @@ public class Farming {
                         && Integer.parseInt((String)reader.data.get("age")) == 7 ) {
                     // break it
                     setSlot(HOE);
-                    Utils.clickHere();
+                    movement.clickHere();
                     // replant it
                     setSlot(SEED);
-                    Utils.rightClickHere();
+                    movement.rightClickHere();
                 }
                 // move forward
                 movement.moveForward(1);
             } else if (targetBlock.equals("farmland")) {
                 // plant crop
                 setSlot(SEED);
-                Utils.rightClickHere();
+                movement.rightClickHere();
                 movement.moveForward(1);
             } else if (targetBlock.equals("dirt")) {
                 // till the earth and plant crop
                 setSlot(HOE);
-                Utils.rightClickHere();
+                movement.rightClickHere();
                 setSlot(SEED);
-                Utils.rightClickHere();
+                movement.rightClickHere();
                 movement.moveForward(1);
             }
             else if (targetBlock.equals("grass_block")){
@@ -85,7 +82,7 @@ public class Farming {
     public void setSlot(int num) {
         // KeyEvent.VK_1 is 49
         if (slot != num) {
-            Utils.pressAndReleaseKey(num + 48);
+            movement.pressAndReleaseKey(num + 48);
             int slot = num;
             Utils.sleep(20);
         }
