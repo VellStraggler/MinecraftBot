@@ -59,13 +59,14 @@ public class Movement {
     /** Extracts what it needs from the given dataset,
      * facing and coordinates. Takes a screenshot on its OWN.
      */
-    public void update() {
+    public F3Data update() {
         Utils.sleep(10);
         // This wait allows movements to not compound
         F3Data screenData = reader.readScreen();
         this.coordinates = (XYZ)screenData.get("Coordinates");
         this.facing = (XY)screenData.get("Facing");
         this.direction = Facing.valueOf(((String)screenData.get("Direction")).toUpperCase());
+        return screenData;
     }
 
     public void turnLeft(){
@@ -164,13 +165,52 @@ public class Movement {
     public void moveForward(int amount) {
         moveForward(amount, true);
     }
+
+    public void moveToLocation(double goalX, double goalY, double goalZ) {
+        moveToLocation(new XYZ(goalX, goalY, goalZ));
+    }
+    public void moveToLocation(XYZ goal) {
+        // FIXME: DOES NOT FUNCTION YET
+        coordinatesGoal = goal;
+        //get the direction to point at
+        double sideA = goal.x - coordinates.x;
+        double sideB = goal.z - coordinates.z;
+        // which one is opposite and which one is adjacent
+        double opp = sideB;
+        // FIXME: This ^ will be wrong half the time
+        double hypotenuse = Math.sqrt((sideA * sideA) + (sideB * sideB));
+        double angle = Math.sin(opp / hypotenuse);
+        facingGoal.x = facing.x + angle;
+
+        alignToDirection();
+        moveToGoal();
+
+    }
+
+    /** Snaps the camera up with frightening speed. */
+    public void lookUp() {
+        // We know it will immediately hit the top after 80 runs
+        // without screenshots
+        int i = 0;
+        while (i < 80) {
+            turnYPixels(-6);
+            i++;
+        }
+    }
+    /** Snaps camera down with frightening speed. */
+    public void lookDown() {
+        turnYPixels(300);
+    }
+    public void moveForward(int amount, boolean jumpingAllowed) {
+        moveForward(amount, jumpingAllowed, true);
+    }
     /**
-     * aligns where player is looking and standing,
+     * Aligns where player is looking and standing,
      * and then moves the given amount forward.
      * Does not account for y-level, and will jump if need be
      * @param amount
      */
-    public void moveForward(int amount, boolean jumpingAllowed) {
+    public void moveForward(int amount, boolean jumpingAllowed, boolean withCenter) {
         // Set goal
         int xChange = 0;
         int zChange = 0;
@@ -190,23 +230,30 @@ public class Movement {
         facingGoal.x = getGeneralFacingNum();
         //facingGoal.y = 55; //This points to the 3 blocks directly in front of you
 
-        // Align with a compass direction
         alignToDirection();
-        // Align to center of block
-        centerOnBlock();
+//        if(withCenter) {
+            centerOnBlock();
+//        }
         // Stay on target!
         coordinatesGoal.x = coordinates.x + xChange;
         coordinatesGoal.z = coordinates.z + zChange;
 
+        // jumpingAllowed is ignored
+        moveToGoal();
+
+        if(withCenter) {
+            centerOnBlock(); // won't matter if we do it twice
+        }
+
+    }
+    private void moveToGoal() {
         // Move to goal
         moveForward();
         while (!coordinateReached()) {
             update();
-            if (shouldJumpThere() && jumpingAllowed) jump();
+            if (shouldJumpThere()) jump();
         }
         releaseAllKeys();
-        centerOnBlock(); // won't matter if we do it twice
-
     }
     public void alignToDirection() {
         while(!closeEnough()) {
@@ -260,7 +307,7 @@ public class Movement {
     public void centerOnBlock() {
         // hold shift and get mostly centered
         pressKey(SHIFT_KEY);
-        double rangeOfMiddle = .15; //down from .2
+        double rangeOfMiddle = .1; //down from .2
         // Set the goal
         coordinatesGoal.x = ((int)coordinates.x) - .5;
         coordinatesGoal.y = coordinates.y;
@@ -380,7 +427,7 @@ public class Movement {
     }
     public void rightClickHere() {
         input.mousePress(InputEvent.BUTTON3_DOWN_MASK);
-        Utils.sleep(50);
+        Utils.sleep(30);
         input.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
     }
     public void clickHere(XY xy) {

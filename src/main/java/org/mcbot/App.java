@@ -13,31 +13,16 @@ public class App {
         Items items = new Items();
         Blocks blocks = new Blocks(items);
         // time to go fullscreen
-        Utils.sleep(2000);
+        Utils.sleep(4000);
         F3DataReader dataReader = new F3DataReader();
         Movement movement = new Movement(dataReader, blocks);
+        Building building = new Building(movement, dataReader);
 
-        //taskss
-        new Building(movement, dataReader).bridge();
-        Mining mining = new Mining(movement, dataReader);
-//        boolean turnRight = true;
-//        for(int i = 0;i < 3;i++) {
-//            mining.simpleStripMine(10);
-//            if (turnRight) {
-//                movement.turnRight();
-//                mining.simpleStripMine(1);
-//                movement.turnRight();
-//            } else {
-//                movement.turnLeft();
-//                mining.simpleStripMine(1);
-//                movement.turnLeft();
-//            }
-//            turnRight = !turnRight;
-//        }
+        //tasks
+        movement.moveForward(1,false,false);
+        building.mlg();
+        //movement.moveToLocation(-429, 35, -433);
+        //Mining mining = new Mining(movement, dataReader);
         //new Farming(movement, dataReader).farmAndPlantCrop("carrots",1000);
-    }
-
-    public static void p(String s) {
-        System.out.println(s);
     }
 }
