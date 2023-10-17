@@ -10,6 +10,7 @@ public class Farming {
     private Movement movement;
     private F3DataReader reader;
     private int slot;
+    private String crop;
     public Farming(Movement movement, F3DataReader reader) {
         this.movement = movement;
         this.reader = reader;
@@ -25,7 +26,8 @@ public class Farming {
      * @param crop
      * @param seconds
      */
-    public void farmAndPlantCrop(String crop, int seconds) {
+    public void farmAndPlantCrop(String newCrop, int seconds) {
+        crop = newCrop;
         //aim at the block directly in front of you
         movement.setYFacing(60);
         boolean turn = false;
@@ -35,47 +37,36 @@ public class Farming {
             if (targetBlock.equals(crop)) {
                 if (reader.data.get("age") != null
                         && Integer.parseInt((String)reader.data.get("age")) == 7 ) {
-                    // break it
-                    setSlot(HOE);
-                    movement.clickHere();
-                    // replant it
-                    setSlot(SEED);
-                    movement.rightClickHere();
+                    farmCrop();
+                    plantCrop();
                 }
-                // move forward
-                movement.moveForward(1);
             } else if (targetBlock.equals("farmland")) {
-                // plant crop
-                setSlot(SEED);
-                movement.rightClickHere();
-                movement.moveForward(1);
+                plantCrop();
             } else if (targetBlock.equals("dirt")) {
-                // till the earth and plant crop
-                setSlot(HOE);
-                movement.rightClickHere();
-                setSlot(SEED);
-                movement.rightClickHere();
-                movement.moveForward(1);
+                tillLand();
+                plantCrop();
             }
-            else if (targetBlock.equals("grass_block")){
+            else if (!targetBlock.contains("slab")){
                 // turn around and start next row
-                movement.moveForward(1);
                 turn = !turn;
                 if(turn) {
                     movement.turnRight();
+                    farmCrop();
+                    plantCrop();
                     movement.moveForward(1);
                     movement.turnRight();
                 } else {
                     movement.turnLeft();
+                    farmCrop();
+                    plantCrop();
                     movement.moveForward(1);
                     movement.turnLeft();
                 }
+                continue;
             }
-            else {
-                movement.moveForward(1);
-            }
+            movement.moveForward(1);
             reader.readScreen();
-            Utils.p(reader.data.toString());
+//            Utils.p(reader.data.toString());
         }
 
     }
@@ -86,5 +77,24 @@ public class Farming {
             int slot = num;
             Utils.sleep(20);
         }
+    }
+    private void farmCrop() {
+        setSlot(HOE);
+        movement.clickHere();
+    }
+    private void tillLand() {
+        setSlot(HOE);
+        movement.rightClickHere();
+    }
+    private void plantCrop() {
+        setSlot(SEED);
+        movement.rightClickHere();
+    }
+    private boolean thisIsReadyCrop(String blockType) {
+        if (blockType.equals(crop)) {
+            return (reader.data.get("age") != null
+                    && Integer.parseInt((String) reader.data.get("age")) == 7);
+        }
+        return false;
     }
 }

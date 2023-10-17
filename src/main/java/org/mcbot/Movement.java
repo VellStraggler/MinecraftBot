@@ -57,7 +57,7 @@ public class Movement {
     }
 
     /** Extracts what it needs from the given dataset,
-     * facing and coordinates. Takes a screenshot on its OWN.
+     * facing and coordinates. TAKES A SCREENSHOT
      */
     public F3Data update() {
         Utils.sleep(10);
@@ -166,24 +166,10 @@ public class Movement {
         moveForward(amount, true);
     }
 
-    public void moveToLocation(double goalX, double goalY, double goalZ) {
-        moveToLocation(new XYZ(goalX, goalY, goalZ));
+    public void pathFinding(XYZ goal) {
+        // pick a direction
     }
-    public void moveToLocation(XYZ goal) {
-        // FIXME: DOES NOT FUNCTION YET
-        coordinatesGoal = goal;
-        //get the direction to point at
-        double sideA = goal.x - coordinates.x;
-        double sideB = goal.z - coordinates.z;
-        // which one is opposite and which one is adjacent
-        double opp = sideB;
-        // FIXME: This ^ will be wrong half the time
-        double hypotenuse = Math.sqrt((sideA * sideA) + (sideB * sideB));
-        double angle = Math.sin(opp / hypotenuse);
-        facingGoal.x = facing.x + angle;
-
-        alignToDirection();
-        moveToGoal();
+    public void destructivePathFinding(XYZ goal) {
 
     }
 
@@ -246,8 +232,12 @@ public class Movement {
         }
 
     }
+
+    /**
+     * Walks forward until a goal is reached.
+     * Jumps if needed.
+     */
     private void moveToGoal() {
-        // Move to goal
         moveForward();
         while (!coordinateReached()) {
             update();
