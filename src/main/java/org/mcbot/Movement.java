@@ -13,6 +13,11 @@ import java.util.Stack;
  * a new image after each use.
  */
 public class Movement {
+    //            North: -Z 180/-180
+    //                   |
+    // West: -X 90 ------+------ East: X -90
+    //                   |
+    //               South: Z 0
     public static XY SCREEN_CENTER = new XY(Utils.SCREEN_RESOLUTION.x/2, Utils.SCREEN_RESOLUTION.y/2);
     private static final int FORWARD_KEY = KeyEvent.VK_W;
     private static final int RIGHT_KEY = KeyEvent.VK_D;
@@ -22,6 +27,10 @@ public class Movement {
     private static final int JUMP_KEY = KeyEvent.VK_SPACE;
     private Blocks blocks;
     private Robot input;
+    private int xUp;
+    private int xDown;
+    private int zUp;
+    private int zDown;
 
     private Stack<Integer> keyStack;
     private XY facing;
@@ -60,8 +69,8 @@ public class Movement {
      * facing and coordinates. TAKES A SCREENSHOT
      */
     public F3Data update() {
+        // wait to prevent compounded movement
         Utils.sleep(10);
-        // This wait allows movements to not compound
         F3Data screenData = reader.readScreen();
         this.coordinates = (XYZ)screenData.get("Coordinates");
         this.facing = (XY)screenData.get("Facing");
@@ -74,14 +83,14 @@ public class Movement {
         if (facingGoal.x < -180) {
             facingGoal.x = 90;
         }
-        alignToDirection();
+        faceDirectionGoal();
     }
     public void turnRight(){
         facingGoal.x = (getGeneralFacingNum() + 90);
         if (facingGoal.x > 180) {
             facingGoal.x = -90;
         }
-        alignToDirection();
+        faceDirectionGoal();
     }
     public void turnPixels(int x, int y) {
         int newX; int newY;
@@ -123,6 +132,7 @@ public class Movement {
         if (facingGoal.x == -180 && facing.x > 0) {
             facingGoal.x = 180;
         }
+        // Else turn left if the goal is north and it's on your left
         if (facingGoal.x == 180 && facing.x < 0) {
             facingGoal.x = -180;
         }
@@ -136,10 +146,6 @@ public class Movement {
         } else if (facingGoal.y > facing.y) {
             y = 1;
         }
-//        double xMult = Math.max(Math.abs(facingGoal.x - facing.x)/45, 1);
-//        double yMult = Math.max(Math.abs(facingGoal.y - facing.y)/5, 1);
-//        x *= (int)(Math.pow(xMult,2));
-//        y *= (int)(Math.pow(yMult,2));
         double xDiff = Math.abs(facingGoal.x - facing.x);
         double yDiff = Math.abs(facingGoal.y - facing.y);
         if (xDiff > 15) x *= 4;
@@ -156,9 +162,10 @@ public class Movement {
     /** Useful y-rotations -
      * 40: strip-mining
      * 81: bridging
+     * 55: This points to the 3 blocks in the spot in front of you
      * @param y
      */
-    public void setYFacing(int y) {
+    public void setYFacingGoal(int y) {
         facingGoal.y = y;
     }
 
@@ -167,7 +174,14 @@ public class Movement {
     }
 
     public void pathFinding(XYZ goal) {
-        // pick a direction
+        // get the z change
+        double zChange = goal.z - coordinates.z;
+        if (zChange < 0) {
+
+        }
+        // determine north or south
+        // get the x change
+        // determine east or west
     }
     public void destructivePathFinding(XYZ goal) {
 
@@ -196,11 +210,11 @@ public class Movement {
      * Does not account for y-level, and will jump if need be
      * @param amount
      */
-    public void moveForward(int amount, boolean jumpingAllowed, boolean withCenter) {
+    public void moveForward(int amount, boolean jumpingAllowed, boolean withCentering) {
         // Set goal
         int xChange = 0;
         int zChange = 0;
-        switch(getFacing()) {
+        switch(direction) {
             case SOUTH:
                 zChange = amount;
                 break;
@@ -214,23 +228,16 @@ public class Movement {
                 zChange = -amount;
         }
         facingGoal.x = getGeneralFacingNum();
-        //facingGoal.y = 55; //This points to the 3 blocks directly in front of you
 
-        alignToDirection();
-//        if(withCenter) {
-            centerOnBlock();
-//        }
+        faceDirectionGoal();
         // Stay on target!
+        centerOnBlock();
         coordinatesGoal.x = coordinates.x + xChange;
         coordinatesGoal.z = coordinates.z + zChange;
-
-        // jumpingAllowed is ignored
         moveToGoal();
-
-        if(withCenter) {
+        if(withCentering) {
             centerOnBlock(); // won't matter if we do it twice
         }
-
     }
 
     /**
@@ -245,13 +252,13 @@ public class Movement {
         }
         releaseAllKeys();
     }
-    public void alignToDirection() {
+    public void faceDirectionGoal() {
         while(!closeEnough()) {
             correction();
             update();
         }
     }
-    private void jump() {
+    public void jump() {
         pressAndReleaseKey(JUMP_KEY);
     }
     private boolean shouldJumpThere() {
@@ -294,17 +301,8 @@ public class Movement {
             return coordinates.equals(coordinatesGoal);
         }
     }
-    public void centerOnBlock() {
-        // hold shift and get mostly centered
-        pressKey(SHIFT_KEY);
-        double rangeOfMiddle = .1; //down from .2
-        // Set the goal
-        coordinatesGoal.x = ((int)coordinates.x) - .5;
-        coordinatesGoal.y = coordinates.y;
-        coordinatesGoal.z = ((int)coordinates.z) - .5;
-        // how will the coordinates change if you go forward or right
-        int xUp; int xDown;
-        int zUp; int zDown;
+    private void setDirectionalMovementFromFacing() {
+        // how the coordinates will change if you go forward or right
         switch (direction) {
             case NORTH:
                 zDown = FORWARD_KEY;
@@ -331,10 +329,21 @@ public class Movement {
                 xDown = FORWARD_KEY;
                 break;
         }
+    }
+    public void centerOnBlock() {
+        // hold shift and get mostly centered
+        pressKey(SHIFT_KEY);
+        double rangeOfMiddle = .1; //down from .2
+        // Set the goal
+        coordinatesGoal.x = ((int)coordinates.x) - .5;
+        coordinatesGoal.y = coordinates.y;
+        coordinatesGoal.z = ((int)coordinates.z) - .5;
+        setDirectionalMovementFromFacing();
         long start = System.currentTimeMillis();
         while(!coordinateReached(rangeOfMiddle)) {
             releaseAllKeys();
             pressKey(SHIFT_KEY);
+            // If centering takes too long, jump and try again.
             if (System.currentTimeMillis() > start + 1000L) {
                 pressKey(JUMP_KEY);
                 Utils.sleep(25);
@@ -360,17 +369,30 @@ public class Movement {
     private void moveForward() {
         pressKey(FORWARD_KEY);
     }
-    public void pressKey(int keyValue) {
+
+    /**
+     * Presses a key and adds it to the keyStack
+     * if it isn't already there.
+     */
+    private void pressKey(int keyValue) {
         if(!keyStack.contains(keyValue)) {
             input.keyPress(keyValue);
             keyStack.add(keyValue);
         }
     }
+
+    /**
+     * Releases the latest key found in the keyStack
+     */
     private void releaseLatestKey() {
         if (!keyStack.isEmpty()) {
             releaseKey(keyStack.pop());
         }
     }
+
+    /**
+     * Releases all keys stored to the keyStack
+     */
     private void releaseAllKeys() {
         while(!keyStack.isEmpty()) {
             releaseKey(keyStack.pop());
@@ -405,9 +427,9 @@ public class Movement {
         clickHere();
     }
     public void clickHere() {
-        input.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-        Utils.sleep(40);
-        input.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        holdClick();
+        Utils.sleep(30);
+        releaseClick();
     }
     public void holdClick() {
         input.mousePress(InputEvent.BUTTON1_DOWN_MASK);

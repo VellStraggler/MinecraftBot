@@ -2,7 +2,6 @@ package org.mcbot.skills;
 
 import org.mcbot.F3DataReader;
 import org.mcbot.Movement;
-import org.mcbot.Utils;
 import org.mcbot.datatypes.XYZ;
 
 public class Mining {
@@ -33,9 +32,9 @@ public class Mining {
      */
     public void simpleStripMine(int length) {
         for(int i = 0; i < length; i ++) {
-            movement.setYFacing(40);
+            movement.setYFacingGoal(40);
             movement.centerOnBlock();
-            movement.alignToDirection();
+            movement.faceDirectionGoal();
             XYZ targ = (XYZ)reader.data.get("Target Coordinates");
             XYZ curr = (XYZ)reader.data.get("Coordinates");
             if (targ.y >= curr.y) {

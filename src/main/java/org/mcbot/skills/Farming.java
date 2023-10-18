@@ -29,7 +29,7 @@ public class Farming {
     public void farmAndPlantCrop(String newCrop, int seconds) {
         crop = newCrop;
         //aim at the block directly in front of you
-        movement.setYFacing(60);
+        movement.setYFacingGoal(60);
         boolean turn = false;
         long endTime = System.currentTimeMillis() + (seconds * 1000L);
         while(System.currentTimeMillis() < endTime) {

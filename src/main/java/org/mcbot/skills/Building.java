@@ -20,7 +20,7 @@ public class Building {
      */
     public void bridge() {
         //setup
-        movement.setYFacing(81);
+        movement.setYFacingGoal(81);
         movement.turnRight();
         movement.turnRight();
         movement.centerOnBlock();
