@@ -1,6 +1,7 @@
 package org.mcbot.skills;
 
 import org.mcbot.F3DataReader;
+import org.mcbot.ImageWork;
 import org.mcbot.Movement;
 import org.mcbot.Utils;
 import org.mcbot.datatypes.XYZ;
@@ -42,7 +43,7 @@ public class Building {
         }
         // This relies on the top-left pixel of "Bucket", which shows up above the toolbar
         // once the water is released
-        while(!Utils.isWhite(Utils.takeScreenshot(), 751, 724)) {
+        while(!Utils.isWhite(ImageWork.takeScreenshot(), 751, 724)) {
             movement.rightClickHere();
         }
     }

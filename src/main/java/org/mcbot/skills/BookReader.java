@@ -1,9 +1,6 @@
 package org.mcbot.skills;
 
-import org.mcbot.CharArrays;
-import org.mcbot.CharRecognition;
-import org.mcbot.Movement;
-import org.mcbot.Utils;
+import org.mcbot.*;
 import org.mcbot.datatypes.RGB;
 import org.mcbot.datatypes.XY;
 
@@ -53,10 +50,10 @@ public class BookReader {
         if (image != null) {
             lastImage = image;
         }
-        image = Utils.takeScreenshot();
+        image = ImageWork.takeScreenshot();
     }
     public void saveImage() {
-        Utils.saveImage(image, "src/main/java/org/bookreader/saved-image");
+        ImageWork.saveImage(image, "src/main/java/org/bookreader/saved-image");
     }
     public static void p(String s) {
         Utils.p(s);

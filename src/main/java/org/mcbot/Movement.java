@@ -374,7 +374,7 @@ public class Movement {
      * Presses a key and adds it to the keyStack
      * if it isn't already there.
      */
-    private void pressKey(int keyValue) {
+    public void pressKey(int keyValue) {
         if(!keyStack.contains(keyValue)) {
             input.keyPress(keyValue);
             keyStack.add(keyValue);

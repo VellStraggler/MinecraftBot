@@ -44,7 +44,7 @@ public class F3DataReader {
         Map<String, Object> data = new HashMap<>();
 
         // Take a screenshot or use the current one
-        screen = Utils.takeScreenshot();
+        screen = ImageWork.takeScreenshot();
         setF3On();
 
         for (int y = START_Y; y < END_Y; y+= (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)) {
@@ -129,7 +129,7 @@ public class F3DataReader {
             // Might be too quick
             Utils.sleep(100);
             // Obviously we need a new screenshot now
-            screen = Utils.takeScreenshot();
+            screen = ImageWork.takeScreenshot();
         }
     }
 }

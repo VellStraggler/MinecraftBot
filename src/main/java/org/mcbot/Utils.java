@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.Buffer;
 
 /**
  * Static-only class that holds functions for things like screenshots
@@ -44,36 +45,7 @@ public class Utils {
         System.out.println(s);
     }
 
-    public static BufferedImage takeScreenshot() {
-        try {
-            Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-            return new Robot().createScreenCapture(screenDimensions);
-        } catch (AWTException e) {
-            System.out.println("Image grab failed: " + e + " " + e.getMessage());
-            return null;
-        }
-    }
 
-    /**
-     * Save an image to the given path. PNG only. Do not include ".png" in the path parameter.
-     * @param image
-     * @param path
-     */
-    public static void saveImage(BufferedImage image, String path) {
-        try {
-            ImageIO.write(image, "png", new File(path + ".png"));
-        } catch (IOException e) {
-            System.out.println("Unable to save image: " + e + " " + e.getMessage());
-        }
-    }
-    public static BufferedImage retrieveImage(String path) {
-        try {
-            return ImageIO.read(new File(path + ".png"));
-        } catch (IOException e) {
-            Utils.p("Unable to read image with path: " + path);
-            return null;
-        }
-    }
     /**
      * Simply checks to see if a given pixel is white on the given screen.
      * @param image
