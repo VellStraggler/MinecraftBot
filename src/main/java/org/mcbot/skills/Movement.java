@@ -1,7 +1,7 @@
 package org.mcbot.skills;
 
-import org.mcbot.F3Data;
-import org.mcbot.F3DataReader;
+import org.mcbot.wordwork.F3Data;
+import org.mcbot.wordwork.F3DataReader;
 import org.mcbot.Utils;
 import org.mcbot.datatypes.*;
 

@@ -1,6 +1,6 @@
 package org.mcbot.skills;
 
-import org.mcbot.F3DataReader;
+import org.mcbot.wordwork.F3DataReader;
 import org.mcbot.ImageWork;
 import org.mcbot.Utils;
 import org.mcbot.datatypes.XYZ;

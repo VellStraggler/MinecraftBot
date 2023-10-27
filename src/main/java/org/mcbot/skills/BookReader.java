@@ -3,15 +3,17 @@ package org.mcbot.skills;
 import org.mcbot.*;
 import org.mcbot.datatypes.RGB;
 import org.mcbot.datatypes.XY;
+import org.mcbot.wordwork.CharLibrary;
+import org.mcbot.wordwork.CharRecognition;
 
 import java.awt.image.BufferedImage;
 
-import static org.mcbot.CharRecognition.PIXEL_WIDTH;
+import static org.mcbot.wordwork.CharRecognition.PIXEL_WIDTH;
 
 public class BookReader {
     public static final int MAX_CHARS_IN_ROW = 58;
     public static final int LINE_WIDTH = MAX_CHARS_IN_ROW * 2;
-    public static final int LINE_HEIGHT = CharArrays.HEIGHT + 1;
+    public static final int LINE_HEIGHT = CharLibrary.HEIGHT + 1;
     public static final int ROWS = 14;
     public static final XY START_POINT = new XY(622,97);
     public static final XY ARROW = new XY(904,490);
@@ -126,7 +128,7 @@ public class BookReader {
             while (column < LINE_WIDTH) {
                 // check this pixel column for ink
                 boolean inkedLine = false;
-                for (int r = 0; r < CharArrays.HEIGHT; r++) {
+                for (int r = 0; r < CharLibrary.HEIGHT; r++) {
                     // if found, a new character has been found
                     if (isInkedPixel((column * PIXEL_WIDTH) + (int)START_POINT.x,
                                     (((row * LINE_HEIGHT) + r) * PIXEL_WIDTH) + (int)START_POINT.y)) {
@@ -162,12 +164,12 @@ public class BookReader {
      */
     public char processChar(int startingX, int startingY) {
         // map the character to an array
-        boolean[][] array = CharArrays.emptyArray();
+        boolean[][] array = CharLibrary.emptyArray();
         int trueWidth = 0;
-        for (int charC = 0; charC < CharArrays.WIDTH; charC++) {
+        for (int charC = 0; charC < CharLibrary.WIDTH; charC++) {
             boolean emptyCol = true;
             int xPixel = (charC * PIXEL_WIDTH) + startingX;
-            for (int charR = 0; charR < CharArrays.HEIGHT; charR++) {
+            for (int charR = 0; charR < CharLibrary.HEIGHT; charR++) {
                 int yPixel = (charR * PIXEL_WIDTH) + startingY;
                 if (isInkedPixel(xPixel, yPixel)) {
                     array[charR][charC] = true;

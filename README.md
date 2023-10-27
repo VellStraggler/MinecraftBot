@@ -32,6 +32,7 @@ Probably not, unless someone pays me ;)
 - Mouse Sensitivity: 30
 - Auto-jump: OFF
 - Default controls
+- DO NOT USE OPTIFINE (you only see the inventory in all screenshots)
 
 All other settings should be Minecraft's default settings.
 ## Computer Settings:

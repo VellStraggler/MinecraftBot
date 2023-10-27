@@ -8,7 +8,12 @@ import javax.imageio.ImageIO;
 
 public class ImageWork {
 
-    public static final int[] quantizedHues = new int[]{0, 85, 170, 255};
+    public static final int[] quantizedHuesOld = new int[]{0, 85, 170, 255};
+    // increment from 0 to 255 by increments of 255/4, creating 5 sections
+    // these \/ are the numbers in the middles of those 5 sections
+    // or more simply, the first 4 sections starts + 32
+    public static final int[] quantizedHues =    new int[]{32, 96, 159, 223};
+    public static final int[] quantizedSection = new int[]{64, 128, 191, 255};
     public static final Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
     public static final Robot screenGrabber;
     static {
@@ -22,27 +27,9 @@ public class ImageWork {
     public static BufferedImage takeScreenshot() {
         return screenGrabber.createScreenCapture(screenDimensions);
     }
-    public static BufferedImage convertImageToGrayscale(BufferedImage image) {
-        return convertImage(image, BufferedImage.TYPE_BYTE_GRAY);
-    }
-    /* Reduces the quality of the image by limiting the number of bytes used to store RGB values */
-    public static BufferedImage convertImageToReduced(BufferedImage image) {
-        return convertImage(image, BufferedImage.TYPE_USHORT_555_RGB);
-    }
-    /* Reduces the image to only two colors: black and white */
-    public static BufferedImage convertImageToBinary(BufferedImage image) {
-        return convertImage(image, BufferedImage.TYPE_BYTE_BINARY);
-    }
-    private static BufferedImage convertImage(BufferedImage image, int imageType) {
-        BufferedImage post = new BufferedImage(image.getWidth(), image.getHeight(), imageType);
-        Graphics2D artist = post.createGraphics();
-        artist.drawImage(image, 0, 0, null);
-        artist.dispose();
-        return post;
-    }
 
     /**
-     * Save an image to the given path. BMP only. Do not include ".bmp" in the path parameter.
+     * Save an image to the given path in BMP format. Do not include ".bmp" in the path parameter.
      * @param image
      * @param path
      */
@@ -64,6 +51,17 @@ public class ImageWork {
         }
     }
 
+    public static BufferedImage convertImageToGrayscale(BufferedImage image) {
+        return convertImage(image, BufferedImage.TYPE_BYTE_GRAY);
+    }
+    /* Reduces the quality of the image by limiting the number of bytes used to store RGB values */
+    public static BufferedImage convertImageToReduced(BufferedImage image) {
+        return convertImage(image, BufferedImage.TYPE_USHORT_555_RGB);
+    }
+    /* Reduces the image to only two colors: black and white */
+    public static BufferedImage convertImageToBinary(BufferedImage image) {
+        return convertImage(image, BufferedImage.TYPE_BYTE_BINARY);
+    }
     public static BufferedImage convertImageTo4Level(BufferedImage originalImage) {
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
@@ -95,15 +93,23 @@ public class ImageWork {
         }
         return twoBitRGBImage;
     }
+    private static BufferedImage convertImage(BufferedImage image, int imageType) {
+        BufferedImage post = new BufferedImage(image.getWidth(), image.getHeight(), imageType);
+        Graphics2D artist = post.createGraphics();
+        artist.drawImage(image, 0, 0, null);
+        artist.dispose();
+        return post;
+    }
 
-    /* Quantize a component (e.g., red, green, or blue) to 2 bits (4 levels) */
+    /* Quantize a component (e.g., red, green, or blue) to 2 bits (4 levels).
+    *  Used in convertImageTo4Level() */
     private static int quantizeComponent(int component) {
         // Adjust the quantization as needed to create 4 levels
-        if (component < quantizedHues[1]) {
+        if (component < quantizedSection[0]) {
             return quantizedHues[0];
-        } else if (component < quantizedHues[2]) {
+        } else if (component < quantizedSection[1]) {
             return quantizedHues[1];
-        } else if (component < quantizedHues[3]) {
+        } else if (component < quantizedSection[2]) {
             return quantizedHues[2];
         } else {
             return quantizedHues[3];

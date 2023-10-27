@@ -2,6 +2,7 @@ package org.mcbot;
 
 import org.mcbot.datatypes.*;
 import org.mcbot.skills.*;
+import org.mcbot.wordwork.F3DataReader;
 
 import java.awt.image.BufferedImage;
 
@@ -17,11 +18,12 @@ public class App {
         ImageWork.saveImage(ImageWork.convertImageToBinary(image), "screenshots/binary");
         ImageWork.saveImage(ImageWork.convertImageToGrayscale(image), "screenshots/grayscale");
         ImageWork.saveImage(ImageWork.convertImageToReduced(image), "screenshots/reduced");
+        ImageWork.saveImage(ImageWork.convertImageTo4Level(image), "screenshots/4level");
         //setup
         Items items = new Items();
         Blocks blocks = new Blocks(items);
         // time to go fullscreen
-        Utils.sleep(4000);
+//        Utils.sleep(4000);
         F3DataReader dataReader = new F3DataReader();
         Movement movement = new Movement(blocks, dataReader);
         Building building = new Building(movement);
@@ -30,6 +32,6 @@ public class App {
         //tasks
 //        movement.moveForward(1,false,false);
 //        building.mlg();
-        new Farming(movement).farmAndPlantCrop("carrots",10000);
+//        new Farming(movement).farmAndPlantCrop("carrots",10000);
     }
 }
