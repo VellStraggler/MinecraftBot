@@ -1,7 +1,6 @@
 package org.mcbot.skills;
 
 import org.mcbot.F3DataReader;
-import org.mcbot.Movement;
 import org.mcbot.Utils;
 
 public class Farming {
@@ -16,6 +15,9 @@ public class Farming {
         this.reader = reader;
         slot = 0;
         setSlot(HOE);
+    }
+    public Farming(Movement movement) {
+        this(movement, movement.getReader());
     }
 
     /**

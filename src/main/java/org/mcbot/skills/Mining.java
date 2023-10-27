@@ -1,7 +1,6 @@
 package org.mcbot.skills;
 
 import org.mcbot.F3DataReader;
-import org.mcbot.Movement;
 import org.mcbot.datatypes.XYZ;
 
 public class Mining {
@@ -11,6 +10,9 @@ public class Mining {
     public Mining(Movement movement, F3DataReader reader) {
         this.movement = movement;
         this.reader = reader;
+    }
+    public Mining(Movement movement) {
+        this(movement, movement.getReader());
     }
 
     /**

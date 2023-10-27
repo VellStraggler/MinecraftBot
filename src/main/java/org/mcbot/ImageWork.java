@@ -8,12 +8,28 @@ import javax.imageio.ImageIO;
 
 public class ImageWork {
 
+    public static final int[] quantizedHues = new int[]{0, 85, 170, 255};
+    public static final Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+    public static final Robot screenGrabber;
+    static {
+        try {
+            screenGrabber = new Robot();
+        } catch (AWTException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static BufferedImage takeScreenshot() {
+        return screenGrabber.createScreenCapture(screenDimensions);
+    }
     public static BufferedImage convertImageToGrayscale(BufferedImage image) {
         return convertImage(image, BufferedImage.TYPE_BYTE_GRAY);
     }
+    /* Reduces the quality of the image by limiting the number of bytes used to store RGB values */
     public static BufferedImage convertImageToReduced(BufferedImage image) {
         return convertImage(image, BufferedImage.TYPE_USHORT_555_RGB);
     }
+    /* Reduces the image to only two colors: black and white */
     public static BufferedImage convertImageToBinary(BufferedImage image) {
         return convertImage(image, BufferedImage.TYPE_BYTE_BINARY);
     }
@@ -24,28 +40,19 @@ public class ImageWork {
         artist.dispose();
         return post;
     }
-    public static BufferedImage takeScreenshot() {
-        try {
-
-            Rectangle screenDimensions = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-            return new Robot().createScreenCapture(screenDimensions);
-
-        } catch (AWTException e) {
-            System.out.println("Image grab failed: " + e + " " + e.getMessage());
-            return null;
-        }
-    }
 
     /**
-     * Save an image to the given path. PNG only. Do not include ".png" in the path parameter.
+     * Save an image to the given path. BMP only. Do not include ".bmp" in the path parameter.
      * @param image
      * @param path
      */
-    public static void saveImage(BufferedImage image, String path) {
+    public static boolean saveImage(BufferedImage image, String path) {
         try {
-            ImageIO.write(image, "png", new File(path + ".png"));
+            ImageIO.write(image, "bmp", new File(path + ".bmp"));
+            return true;
         } catch (IOException e) {
-            System.out.println("Unable to save image: " + e + " " + e.getMessage());
+            Utils.p("Unable to save image: " + e + " " + e.getMessage());
+            return false;
         }
     }
     public static BufferedImage retrieveImage(String path) {
@@ -86,24 +93,20 @@ public class ImageWork {
                 twoBitRGBImage.setRGB(x, y, quantizedRGB);
             }
         }
-
-        // Save the 2-bit RGB image
-        //ImageIO.write(twoBitRGBImage, "bmp", new File("screenshots/altered.bmp"));
         return twoBitRGBImage;
-
     }
 
     /* Quantize a component (e.g., red, green, or blue) to 2 bits (4 levels) */
     private static int quantizeComponent(int component) {
-        // Adjust the quantization as needed to create 4 levels: 0, 85, 170, 255
-        if (component < 85) {
-            return 0;
-        } else if (component < 170) {
-            return 85;
-        } else if (component < 255) {
-            return 170;
+        // Adjust the quantization as needed to create 4 levels
+        if (component < quantizedHues[1]) {
+            return quantizedHues[0];
+        } else if (component < quantizedHues[2]) {
+            return quantizedHues[1];
+        } else if (component < quantizedHues[3]) {
+            return quantizedHues[2];
         } else {
-            return 255;
+            return quantizedHues[3];
         }
     }
 }

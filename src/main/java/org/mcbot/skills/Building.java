@@ -2,7 +2,6 @@ package org.mcbot.skills;
 
 import org.mcbot.F3DataReader;
 import org.mcbot.ImageWork;
-import org.mcbot.Movement;
 import org.mcbot.Utils;
 import org.mcbot.datatypes.XYZ;
 
@@ -13,6 +12,9 @@ public class Building {
     public Building(Movement movement, F3DataReader reader) {
         this.movement = movement;
         this.reader = reader;
+    }
+    public Building(Movement movement) {
+        this(movement, movement.getReader());
     }
 
     /**
