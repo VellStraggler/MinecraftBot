@@ -40,10 +40,11 @@ All other settings should be Minecraft's default settings.
 It should not change the volume. You can turn on Fn Lock by pressing Fn + esc
 - Make sure it is not on battery saver mode, or the GPU will not be used by
 Minecraft.
-## Ideas to be implemented (in order):
+## Ideas to be implemented:
 1. Mining
 2. Path-finding
 3. Long-jumping
+4. Text Item Database
 4. Swimming
 5. Attacking
 6. Interactable Class
@@ -61,3 +62,4 @@ Minecraft.
 - Use of vehicles
 - Picking the best available tools
 - Diagonal Paths
+- Reading slanted words (such as renamed items)

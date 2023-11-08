@@ -1,5 +1,7 @@
 package org.mcbot.datatypes;
 
+import org.mcbot.datatypes.containers.Items;
+
 import java.util.HashMap;
 import java.util.Map;
 

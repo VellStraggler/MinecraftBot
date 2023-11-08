@@ -1,6 +1,8 @@
 package org.mcbot;
 
 import org.mcbot.datatypes.*;
+import org.mcbot.datatypes.containers.Inventory;
+import org.mcbot.datatypes.containers.Items;
 import org.mcbot.skills.*;
 import org.mcbot.wordwork.F3DataReader;
 
@@ -26,6 +28,7 @@ public class App {
 //        Utils.sleep(4000);
         F3DataReader dataReader = new F3DataReader();
         Movement movement = new Movement(blocks, dataReader);
+        Inventory inventory = new Inventory(items, movement);
         Building building = new Building(movement);
         Mining mining =     new Mining(movement);
 

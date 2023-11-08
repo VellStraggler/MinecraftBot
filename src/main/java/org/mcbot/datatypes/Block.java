@@ -1,5 +1,7 @@
 package org.mcbot.datatypes;
 
+import org.mcbot.datatypes.containers.Item;
+
 public class Block {
     public final Item item;
     public final boolean breathable;

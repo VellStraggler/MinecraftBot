@@ -63,6 +63,9 @@ public class Utils {
             p("Unable to sleep? " + e.getMessage());
         }
     }
+    public static void sleepOneFrame() {
+        sleep(1000/60);
+    }
 
     /**
      * Only use this in cases where the Movement class has not been instantiated

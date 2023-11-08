@@ -1,4 +1,4 @@
-package org.mcbot.datatypes;
+package org.mcbot.datatypes.containers;
 
 public class Item {
 //    private Recipe recipe;
@@ -6,9 +6,9 @@ public class Item {
 //    private Directions howToGet;
 
     public final String name;
-    public final boolean placeable;
-    public final boolean edible;
-    public Item (String name, boolean placeable, boolean edible) {
+    public final Boolean placeable;
+    public final Boolean edible;
+    public Item (String name, Boolean placeable, Boolean edible) {
         this.name = name;
         this.placeable = placeable;
         this.edible = edible;

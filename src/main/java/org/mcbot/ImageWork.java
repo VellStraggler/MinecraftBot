@@ -1,5 +1,7 @@
 package org.mcbot;
 
+import org.mcbot.datatypes.RGB;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -24,6 +26,9 @@ public class ImageWork {
         }
     }
 
+    public static RGB getRGB(BufferedImage image, int x, int y) {
+        return new RGB(image.getRGB(x, y));
+    }
     public static BufferedImage takeScreenshot() {
         return screenGrabber.createScreenCapture(screenDimensions);
     }

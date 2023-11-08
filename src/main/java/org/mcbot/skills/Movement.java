@@ -67,6 +67,7 @@ public class Movement {
             throw new RuntimeException("Keyboard input not working for some reason. " + e.getMessage());
         }
     }
+    public Blocks getBlocks() { return blocks; }
     public F3DataReader getReader() {
         return reader;
     }

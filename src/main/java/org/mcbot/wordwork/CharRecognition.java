@@ -38,9 +38,9 @@ public class CharRecognition {
     // what's left  | len 21
     private static final char[] levelOneTwo = "nihrlmykpHWMANRPF0K@|".toCharArray();
 
-    private final BufferedImage image;
+    private BufferedImage image;
     private final RGB textColor;
-    private final XY startingPoint;
+    private XY startingPoint;
     // Refers to a text row
     private int row;
     // Refers to character pixel column
@@ -59,6 +59,11 @@ public class CharRecognition {
         this.col = 0;
         this.textColor = textColor;
     }
+    public void update(BufferedImage image, XY startingPoint) {
+        this.image = image;
+        this.startingPoint = startingPoint;
+    }
+
     public int readDigit() {
         boolean[][] array = getArrayFromImagePoint();
         char digitChar = CharRecognition.getDigit(array);
