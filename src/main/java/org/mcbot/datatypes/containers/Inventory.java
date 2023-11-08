@@ -14,7 +14,7 @@ public class Inventory implements Container {
     // This is the same for almost any container that is opened, regardless of a potion effect
     private static final XY CORNER = new XY(561, 453);
     private static final XY CORNER_WITH_DOUBLE_CHEST_OPEN = new XY(561,534);
-    private static final XY TEXT_OFFSET = new XY(60, -38);
+    public static final XY TEXT_OFFSET = new XY(61, -38);
     private static final XY TEXT_CHECK_FOR_BLACK = new XY(77, -38);
     private static final short WIDTH = 9;
     private static final short HEIGHT = 3;
@@ -34,7 +34,7 @@ public class Inventory implements Container {
         this.blocks = movement.getBlocks();
         this.items = items;
 
-        charRecognition = new CharRecognition(null, null, RGB.HAND_WHITE);
+        charRecognition = new CharRecognition(null, null, RGB.INVENTORY_WHITE);
 
         storage = new Slot[WIDTH][HEIGHT];
         hotbar = new Slot[WIDTH];
@@ -66,7 +66,11 @@ public class Inventory implements Container {
             x = (int) CORNER.x;
         }
     }
-    private Slot readSlot(BufferedImage image, int x, int y) {
+    public XY getSlotCoordinates(int x, int y) {
+        return new XY(CORNER.x + (Slot.PIXELS_WIDE * x), CORNER.y + (Slot.PIXELS_WIDE * y));
+    }
+    /** x and y refer to pixel coordinates. **/
+    public Slot readSlot(BufferedImage image, int x, int y) {
         if(!ImageWork.getRGB(image, x + (int)TEXT_CHECK_FOR_BLACK.x, y + (int)TEXT_CHECK_FOR_BLACK.y).isDark()) {
             return null;
         }

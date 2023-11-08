@@ -144,7 +144,8 @@ public class CharRecognition {
             for (int charR = 0; charR < CharLibrary.HEIGHT; charR++) {
                 // We have the base starting point row plus the new line row we're on plus the pixel row of the char
                 int yPixel = (int)startingPoint.y + (((row * NEW_LINE) + charR) * PIXEL_WIDTH);
-                if (new RGB(image.getRGB(xPixel, yPixel)).equals(textColor)) {
+                RGB rgb = new RGB(image.getRGB(xPixel, yPixel));
+                if (rgb.equals(textColor)) {
                     array[charR][charC] = true;
                     emptyCol = false;
                 }

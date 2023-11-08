@@ -9,6 +9,7 @@ public class RGB implements Comparable<RGB>{
     public static final int MID = 200;//127;
     public static final RGB WHITE = new RGB(255,255,255);
     public static final RGB HAND_WHITE = new RGB(252, 252, 252);
+    public static final RGB INVENTORY_WHITE = new RGB(198, 198, 198);
     public static final RGB F3_WHITE = new RGB(221, 221, 221);
     public static final RGB BLACK = new RGB(0,0,0);
     public final int r;

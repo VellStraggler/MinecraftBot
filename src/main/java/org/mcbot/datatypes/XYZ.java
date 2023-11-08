@@ -3,9 +3,15 @@ package org.mcbot.datatypes;
 public class XYZ extends XY{
     public double z;
     public XYZ(XYZ other) {
-        this.x = other.x;
-        this.y = other.y;
-        this.z = other.z;
+        if(other == null) {
+            x = 0;
+            y = 0;
+            z = 0;
+        } else {
+            this.x = other.x;
+            this.y = other.y;
+            this.z = other.z;
+        }
     }
     public XYZ(double x, double y, double z) {
         super(x,y);
