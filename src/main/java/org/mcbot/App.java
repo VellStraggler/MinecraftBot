@@ -3,6 +3,7 @@ package org.mcbot;
 import org.mcbot.datatypes.*;
 import org.mcbot.datatypes.containers.Inventory;
 import org.mcbot.datatypes.containers.Items;
+import org.mcbot.datatypes.containers.Slot;
 import org.mcbot.skills.*;
 import org.mcbot.wordwork.F3DataReader;
 
@@ -10,8 +11,19 @@ import java.awt.image.BufferedImage;
 
 public class App {
     public static void main(String[] args) {
-        Utils.sleep(4000);
-        notMain(args);
+//        Utils.sleep(4000);
+        Items items = new Items();
+        Blocks blocks = new Blocks(items);
+        // time to go fullscreen
+        F3DataReader dataReader = new F3DataReader();
+        Movement movement = new Movement(blocks, dataReader);
+        Inventory inventory = new Inventory(items, movement);
+        BufferedImage image = ImageWork.retrieveImage("src/main/resources/inventory_with_crafting_table");
+        XY slotCoord = inventory.getSlotCoordinates(4, 0);
+        Slot slot = inventory.readSlot(image, (int)(slotCoord.x), (int)(slotCoord.y));
+        Utils.p("name:" + slot.item.name);
+        ImageWork.saveImage(image, "src/main/resources/affected_image");
+        //notMain(args);
     }
 
     public static void notMain(String[] args) {

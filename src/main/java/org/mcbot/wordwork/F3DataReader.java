@@ -34,10 +34,9 @@ public class F3DataReader {
     private BufferedImage screen;
     public F3Data data;
 
-    /** Write down where everything is. This
+    /** Writes down where everything is. This
      * should only be initialized once. **/
     public F3DataReader() {
-        F3Data f3data = readScreen();
     }
 
     /** Takes a screenshot and returns the data from it **/

@@ -51,17 +51,19 @@ public class Movement {
      */
     public Movement(Blocks blocks, F3DataReader dataReader) {
         F3Data screenData = dataReader.data;
-        this.coordinates = (XYZ)screenData.get("Coordinates");
-        this.facing = (XY)screenData.get("Facing");
-        String compassDirection = ((String)screenData.get("Direction"));
-        if (compassDirection != null) {
-            compassDirection = compassDirection.toUpperCase();
-            this.direction = Facing.valueOf(compassDirection);
-        }
+        if(screenData != null) {
+            this.coordinates = (XYZ) screenData.get("Coordinates");
+            this.facing = (XY) screenData.get("Facing");
+            String compassDirection = ((String) screenData.get("Direction"));
+            if (compassDirection != null) {
+                compassDirection = compassDirection.toUpperCase();
+                this.direction = Facing.valueOf(compassDirection);
+            }
 
-        this.coordinatesGoal = new XYZ(coordinates);
-        if(facing != null) {
-            this.facingGoal = new XY(facing.x, 55);
+            this.coordinatesGoal = new XYZ(coordinates);
+            if (facing != null) {
+                this.facingGoal = new XY(facing.x, 55);
+            }
         }
         this.keyStack = new Stack<>();
         this.reader = dataReader;

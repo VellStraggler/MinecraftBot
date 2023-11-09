@@ -115,6 +115,10 @@ public class CharRecognition {
                 stringBuilder.append(currentChar);
             }
         }
+        // check for unnecessary whitespace at the end and remove it
+        if(stringBuilder.charAt(stringBuilder.length()-1) == ' ') {
+            stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        }
         return stringBuilder.toString();
     }
 

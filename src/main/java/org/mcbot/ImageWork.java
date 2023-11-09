@@ -40,7 +40,7 @@ public class ImageWork {
      */
     public static boolean saveImage(BufferedImage image, String path) {
         try {
-            ImageIO.write(image, "bmp", new File(path + ".bmp"));
+            ImageIO.write(image, "png", new File(path + ".png"));
             return true;
         } catch (IOException e) {
             Utils.p("Unable to save image: " + e + " " + e.getMessage());

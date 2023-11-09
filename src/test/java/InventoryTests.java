@@ -34,7 +34,7 @@ public class InventoryTests {
 
     @Test
     public void readInventoryWithCraftingTablePngImage() {
-        BufferedImage image = ImageWork.retrieveImage("src/main/resources/inventory_with_chest");
+        BufferedImage image = ImageWork.retrieveImage("src/main/resources/inventory_with_crafting_table");
         XY slotCoord = inventory.getSlotCoordinates(4, 0);
         Slot slot = inventory.readSlot(image, (int)(slotCoord.x), (int)(slotCoord.y));
         assertEquals("Coal", slot.getItem().name);

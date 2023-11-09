@@ -34,7 +34,7 @@ public class Inventory implements Container {
         this.blocks = movement.getBlocks();
         this.items = items;
 
-        charRecognition = new CharRecognition(null, null, RGB.INVENTORY_WHITE);
+        charRecognition = new CharRecognition(null, null, RGB.HAND_WHITE);
 
         storage = new Slot[WIDTH][HEIGHT];
         hotbar = new Slot[WIDTH];
