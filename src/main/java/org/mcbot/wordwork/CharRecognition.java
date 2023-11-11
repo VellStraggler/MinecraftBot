@@ -1,5 +1,6 @@
 package org.mcbot.wordwork;
 
+import org.mcbot.Utils;
 import org.mcbot.datatypes.RGB;
 import org.mcbot.datatypes.XY;
 
@@ -74,6 +75,8 @@ public class CharRecognition {
         // It's easier to try to read a whole character
         // than to check if every column is in bounds.
         int spaces = 0;
+        col = 0;
+//        Utils.p("Starting point: " + startingPoint.toString());
         while(true) {
             try {
                 char currentChar = readChar();
@@ -103,6 +106,7 @@ public class CharRecognition {
     public String readToThreeSpaces() {
         StringBuilder stringBuilder = new StringBuilder();
         int spaces = 0;
+        col = 0;
         while (spaces != 10) {
             char currentChar = readChar();
             if (currentChar == ' ') {
@@ -148,6 +152,8 @@ public class CharRecognition {
             for (int charR = 0; charR < CharLibrary.HEIGHT; charR++) {
                 // We have the base starting point row plus the new line row we're on plus the pixel row of the char
                 int yPixel = (int)startingPoint.y + (((row * NEW_LINE) + charR) * PIXEL_WIDTH);
+                if(charR == 0 && charC == 0) {
+                }
                 RGB rgb = new RGB(image.getRGB(xPixel, yPixel));
                 if (rgb.equals(textColor)) {
                     array[charR][charC] = true;

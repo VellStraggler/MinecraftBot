@@ -26,6 +26,7 @@ Probably not, unless someone pays me ;)
 
 ## In-game Settings:
 - Resolution: 1600x900@60 (24 bit)
+- Version: 1.19.3+
 - GUI Scale: 3
 - Set to Fullscreen
 - Render Distance: 2 (For RAM freeing)

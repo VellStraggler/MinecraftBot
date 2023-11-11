@@ -64,7 +64,7 @@ public class Utils {
         }
     }
     public static void sleepOneFrame() {
-        sleep(1000/60);
+        sleep(1000/30);
     }
 
     /**

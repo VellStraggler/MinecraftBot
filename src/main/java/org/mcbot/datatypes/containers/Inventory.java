@@ -14,7 +14,8 @@ public class Inventory implements Container {
     // This is the same for almost any container that is opened, regardless of a potion effect
     private static final XY CORNER = new XY(561, 453);
     private static final XY CORNER_WITH_DOUBLE_CHEST_OPEN = new XY(561,534);
-    public static final XY TEXT_OFFSET = new XY(61, -38);
+//    public static final XY TEXT_OFFSET = new XY(61, -38);
+    public static final XY TEXT_OFFSET = new XY(34, -35);
     private static final XY TEXT_CHECK_FOR_BLACK = new XY(77, -38);
     private static final short WIDTH = 9;
     private static final short HEIGHT = 3;
@@ -43,10 +44,9 @@ public class Inventory implements Container {
 
     /** Reads through entire inventory excluding armor and shield slots. **/
     public void readContents() {
+        //move to the first corner
         int x = (int) CORNER.x;
         int y = (int) CORNER.y;
-
-        //move to the first corner
 
         //iterate through all slots
         for(int r = 0; r < HEIGHT; r++) {
@@ -59,6 +59,8 @@ public class Inventory implements Container {
                 BufferedImage image = ImageWork.takeScreenshot();
                 // check for text box
                 storage[c][r] = readSlot(image, x, y);
+//                Utils.p("r: " + r + " | c: " + c + " " + storage[c][r].item.name + ".");
+//                x = (int)(CORNER.x) + ((c+1)*Slot.PIXELS_WIDE);
                 x += Slot.PIXELS_WIDE;
             }
             // set up next row
