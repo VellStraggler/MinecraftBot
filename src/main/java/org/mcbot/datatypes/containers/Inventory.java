@@ -19,6 +19,7 @@ public class Inventory implements Container {
     private static final XY TEXT_CHECK_FOR_BLACK = new XY(77, -38);
     private static final short WIDTH = 9;
     private static final short HEIGHT = 3;
+    private static final short HOTBAR_PADDING = 12;
 
 
     private Slot[][] storage;
@@ -37,8 +38,8 @@ public class Inventory implements Container {
 
         charRecognition = new CharRecognition(null, null, RGB.HAND_WHITE);
 
-        storage = new Slot[WIDTH][HEIGHT];
-        hotbar = new Slot[WIDTH];
+        storage = new Slot[HEIGHT+1][WIDTH];
+        hotbar = storage[HEIGHT];
     }
 
 
@@ -50,26 +51,28 @@ public class Inventory implements Container {
 
         //iterate through all slots
         for(int r = 0; r < HEIGHT; r++) {
-            for(int c = 0; c < WIDTH; c++) {
-                // hover to the slot
-                movement.moveMouseHere(x, y);
-                // allow screen to refresh;
-                Utils.sleepOneFrame();
-                // take a photo
-                BufferedImage image = ImageWork.takeScreenshot();
-                // check for text box
-                storage[c][r] = readSlot(image, x, y);
-//                Utils.p("r: " + r + " | c: " + c + " " + storage[c][r].item.name + ".");
-//                x = (int)(CORNER.x) + ((c+1)*Slot.PIXELS_WIDE);
-                x += Slot.PIXELS_WIDE;
-            }
+            readRow(x, y, r);
             // set up next row
             y += Slot.PIXELS_WIDE;
             x = (int) CORNER.x;
         }
+        readHotBar();
     }
     public XY getSlotCoordinates(int x, int y) {
         return new XY(CORNER.x + (Slot.PIXELS_WIDE * x), CORNER.y + (Slot.PIXELS_WIDE * y));
+    }
+    public void readRow(int x, int y, int r) {
+        for(int c = 0; c < WIDTH; c++) {
+            // hover to the slot
+            movement.moveMouseHere(x, y);
+            // allow screen to refresh;
+            Utils.sleepOneFrame();
+            // take a photo
+            BufferedImage image = ImageWork.takeScreenshot();
+            // check for text box
+            storage[r][c] = readSlot(image, x, y);
+            x += Slot.PIXELS_WIDE;
+        }
     }
     /** x and y refer to pixel coordinates. **/
     public Slot readSlot(BufferedImage image, int x, int y) {
@@ -97,10 +100,9 @@ public class Inventory implements Container {
     }
 
     public void readHotBar() {
-        if(recipeShortcutsOpen) {
-
-        } else {
-        }
+        int x = (int) CORNER.x;
+        int y = (int) CORNER.y + (Slot.PIXELS_WIDE*HEIGHT) + HOTBAR_PADDING;
+        readRow(x, y, HEIGHT);
     }
 
     /** Checks if the inventory is open or not through a screenshot. **/
