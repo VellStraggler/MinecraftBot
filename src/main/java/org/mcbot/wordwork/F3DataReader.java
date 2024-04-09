@@ -38,18 +38,30 @@ public class F3DataReader {
      * should only be initialized once. **/
     public F3DataReader() {
     }
+    /** Reads every character shown on screen **/
+    public void PrintWholeScreenContents() {
+        Map<String, Object> data = new HashMap<>();
+        screen = ImageWork.takeScreenshot();
+        setF3OnIfOff();
 
+        for (int y = START_Y; y < END_Y; y+= (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)) {
+            String line = new CharRecognition(screen, new XY(LEFT_X, y), RGB.F3_WHITE).readToImageEdge();
+            Utils.p(line);
+        }
+        Utils.p("\n\n\n");
+    }
     /** Takes a screenshot and returns the data from it **/
     public F3Data readScreen() {
         Map<String, Object> data = new HashMap<>();
 
         // Take a screenshot or use the current one
         screen = ImageWork.takeScreenshot();
-        setF3On();
+        setF3OnIfOff();
 
         for (int y = START_Y; y < END_Y; y+= (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)) {
             // read the first character of the line
             char c = new CharRecognition(screen, new XY(LEFT_X, y), RGB.F3_WHITE).readChar();
+            // check for the first characters of the data keys rather than entire words
             for(int i = 0; i < F3Data.leftFirstChars.length; i++) {
                 char s = F3Data.leftFirstChars[i];
                 if (c == s) {
@@ -73,9 +85,6 @@ public class F3DataReader {
                                 double y2 = Double.parseDouble(line.substring(line.indexOf('/') + 2,line.length()-2));
                                 data.put(key, new XY(x2, y2));
                                 break;
-                            case ("Local Difficulty"):
-                                // DAY
-                                data.put("Day", Integer.parseInt(line.substring(line.indexOf('(')+5,line.length()-2)));
                         }
                     }
                 }
@@ -108,7 +117,7 @@ public class F3DataReader {
                     }
                 }
             }
-            // We are adding everything just in case
+            // We are adding every variable just in case
             line = line.replace("#","");
             line = line.replace("minecraft","");
             line = line.replaceAll(" ","");
@@ -118,10 +127,11 @@ public class F3DataReader {
             }
         }
         this.data = new F3Data(data);
+//        Utils.p(data.toString());
         return this.data;
     }
 
-    private void setF3On() {
+    private void setF3OnIfOff() {
         // Detect if F3 mode is on. This checks the top left corner of 'Minecraft 1.20.1...etc'
         if (!RGB.F3_WHITE.equals(screen,7,7) && !RGB.F3_WHITE.equals(screen,4,4)) {
             // Press F3 if that isn't the case

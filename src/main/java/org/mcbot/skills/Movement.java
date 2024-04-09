@@ -27,7 +27,10 @@ public class Movement {
     private static final int LEFT_KEY = KeyEvent.VK_A;
     public static final int BACKWARD_KEY = KeyEvent.VK_S;
     public static final int SHIFT_KEY = KeyEvent.VK_SHIFT;
+    public static final int INVENTORY_KEY = KeyEvent.VK_E;
     private static final int JUMP_KEY = KeyEvent.VK_SPACE;
+
+
     private Blocks blocks;
     private Robot input;
     private int xUp;
@@ -90,6 +93,7 @@ public class Movement {
         this.coordinates = (XYZ)screenData.get("Coordinates");
         this.facing = (XY)screenData.get("Facing");
         this.direction = Facing.valueOf(((String)screenData.get("Direction")).toUpperCase());
+//        Utils.p(screenData.toString());
         return screenData;
     }
 

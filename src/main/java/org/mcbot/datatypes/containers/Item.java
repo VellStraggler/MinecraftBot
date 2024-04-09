@@ -13,5 +13,12 @@ public class Item {
         this.placeable = placeable;
         this.edible = edible;
     }
+    @Override
+    public String toString() {
+        if (name.equals("null")) {
+            return "no item";
+        }
+        return name + "- placeable: " + placeable + ", edible: " + edible;
+    }
 
 }

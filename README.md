@@ -31,6 +31,7 @@ Probably not, unless someone pays me ;)
 - Set to Fullscreen
 - Render Distance: 2 (For RAM freeing)
 - Mouse Sensitivity: 30
+- Raw Input: OFF
 - Auto-jump: OFF
 - Default controls
 - DO NOT USE OPTIFINE (you only see the inventory in all screenshots)

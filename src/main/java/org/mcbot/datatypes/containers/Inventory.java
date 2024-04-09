@@ -41,10 +41,14 @@ public class Inventory implements Container {
         storage = new Slot[HEIGHT+1][WIDTH];
         hotbar = storage[HEIGHT];
     }
+    public void toggleInventory() {
+        movement.pressAndReleaseKey(Movement.INVENTORY_KEY);
+    }
 
 
-    /** Reads through entire inventory excluding armor and shield slots. **/
+    /** Reads through entire inventory excluding armor and shield slots.**/
     public void readContents() {
+        toggleInventory();
         //move to the first corner
         int x = (int) CORNER.x;
         int y = (int) CORNER.y;
@@ -57,11 +61,12 @@ public class Inventory implements Container {
             x = (int) CORNER.x;
         }
         readHotBar();
+        toggleInventory();
     }
     public XY getSlotCoordinates(int x, int y) {
         return new XY(CORNER.x + (Slot.PIXELS_WIDE * x), CORNER.y + (Slot.PIXELS_WIDE * y));
     }
-    public void readRow(int x, int y, int r) {
+    private void readRow(int x, int y, int r) {
         for(int c = 0; c < WIDTH; c++) {
             // hover to the slot
             movement.moveMouseHere(x, y);
@@ -74,7 +79,8 @@ public class Inventory implements Container {
             x += Slot.PIXELS_WIDE;
         }
     }
-    /** x and y refer to pixel coordinates. **/
+    /** Read an item slot in the inventory.
+     * x and y refer to pixel coordinates. **/
     public Slot readSlot(BufferedImage image, int x, int y) {
         if(!ImageWork.getRGB(image, x + (int)TEXT_CHECK_FOR_BLACK.x, y + (int)TEXT_CHECK_FOR_BLACK.y).isDark()) {
             return null;
@@ -83,6 +89,10 @@ public class Inventory implements Container {
         XY slotLoc = new XY(x+ TEXT_OFFSET.x, y + TEXT_OFFSET.y);
         charRecognition.update(image, slotLoc);
         String itemName = charRecognition.readToThreeSpaces();
+        // If there is no name, there is no item
+        if (itemName.length() == 0) {
+            itemName = "null";
+        }
         // FIXME: read the amount
         // if there isn't an amount, put it in as 1
         byte amount = 1;

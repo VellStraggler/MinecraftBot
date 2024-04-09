@@ -34,7 +34,8 @@ public class ImageWork {
     }
 
     /**
-     * Save an image to the given path in BMP format. Do not include ".bmp" in the path parameter.
+     * Save an image to the given path in PNG format. Do not include ".png" in the path parameter.
+     * Deprecated: Did use BMP format.
      * @param image
      * @param path
      */
