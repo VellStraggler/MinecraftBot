@@ -80,4 +80,7 @@ public class Utils {
             input.keyRelease(inputEvent);
         } catch (AWTException ignored) {}
     }
+    public static double distanceFrom(double here, double there) {
+        return Math.abs(here - there);
+    }
 }

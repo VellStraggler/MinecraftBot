@@ -10,6 +10,8 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Stack;
 
+import static org.mcbot.Utils.p;
+
 /**
  * Takes rotation values 'facing' and base coordinates
  * to discover the orientation of the player. Requires
@@ -98,6 +100,7 @@ public class Movement {
     }
 
     public void turnLeft(){
+        p("turn left");
         facingGoal.x = (getGeneralFacingNum() - 90);
         if (facingGoal.x < -180) {
             facingGoal.x = 90;
@@ -105,6 +108,7 @@ public class Movement {
         faceDirectionGoal();
     }
     public void turnRight(){
+        p("turn right");
         facingGoal.x = (getGeneralFacingNum() + 90);
         if (facingGoal.x > 180) {
             facingGoal.x = -90;
@@ -189,6 +193,7 @@ public class Movement {
     }
 
     public void moveForward(int amount) {
+        p("move forward " + amount);
         moveForward(amount, true);
     }
 

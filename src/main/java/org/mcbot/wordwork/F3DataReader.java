@@ -27,7 +27,7 @@ public class F3DataReader {
     private static final int END_Y = 628 + 1;
     private static final int LEFT_X = 7;
     // This is where data reading begins on the left side
-    private static final int RIGHT_START_Y = 304;//333;
+    private static final int RIGHT_START_Y = 304;
     private static final int RIGHT_END_Y = 412 + 1;
     private static final int RIGHT_X = 1006;
     // For data reading on the right side. This skips computer information and DISPLAY resolution
@@ -48,7 +48,7 @@ public class F3DataReader {
             String line = new CharRecognition(screen, new XY(LEFT_X, y), RGB.F3_WHITE).readToImageEdge();
             Utils.p(line);
         }
-        Utils.p("\n\n\n");
+        Utils.p("\n\n");
     }
     /** Takes a screenshot and returns the data from it **/
     public F3Data readScreen() {
@@ -58,6 +58,7 @@ public class F3DataReader {
         screen = ImageWork.takeScreenshot();
         setF3OnIfOff();
 
+        // read LEFT side
         for (int y = START_Y; y < END_Y; y+= (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)) {
             // read the first character of the line
             char c = new CharRecognition(screen, new XY(LEFT_X, y), RGB.F3_WHITE).readChar();
@@ -80,9 +81,10 @@ public class F3DataReader {
                                 data.put("Coordinates", new XYZ(x1, y1, z1));
                                 break;
                             case ("Facing"):
+                                // ex: "Facing: north (Towards negative Z) (-173.3 / 15.9)"
                                 data.put("Direction", line.substring(line.indexOf(' ')+1, line.indexOf('(') -1)); //i.e. north
                                 double x2 = Double.parseDouble(line.substring(line.indexOf(") (")+3, line.indexOf('/')-1));
-                                double y2 = Double.parseDouble(line.substring(line.indexOf('/') + 2,line.length()-2));
+                                double y2 = Double.parseDouble(line.substring(line.indexOf('/') + 2,line.length()-1));
                                 data.put(key, new XY(x2, y2));
                                 break;
                         }
@@ -90,6 +92,7 @@ public class F3DataReader {
                 }
             }
         }
+        // read RIGHT Side
         for (int y = RIGHT_START_Y; y < RIGHT_END_Y; y+= (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)) {
             // read the line we want to read
             String line = new CharRecognition(screen, new XY(RIGHT_X, y), RGB.F3_WHITE).readToImageEdge();
@@ -127,7 +130,6 @@ public class F3DataReader {
             }
         }
         this.data = new F3Data(data);
-//        Utils.p(data.toString());
         return this.data;
     }
 

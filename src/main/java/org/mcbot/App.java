@@ -17,10 +17,9 @@ public class App {
         Blocks blocks = new Blocks(items);
         // time to go fullscreen
         F3DataReader dataReader = new F3DataReader();
-        Movement movement = new Movement(blocks, dataReader);
         dataReader.PrintWholeScreenContents();
         dataReader.readScreen();
-        Utils.p(dataReader.data.toString());
+        Movement movement = new Movement(blocks, dataReader);
         Inventory inventory = new Inventory(items, movement);
         inventory.readContents();
         // Initialize Task Types
