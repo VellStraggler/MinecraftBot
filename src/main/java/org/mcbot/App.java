@@ -27,8 +27,18 @@ public class App {
         //Farming farming = new Farming(movement);
 
         // Do what you want
+        long total = System.currentTimeMillis();
+        for(int i = 0; i < 15; i++) {
+            long start = System.currentTimeMillis();
+            for (int j = 0; j < 4; j++) {
+                movement.turnRight();
+            }
 
-        mining.mineSquareArea(6);
-        Utils.p("Complete");
+            for (int j = 0; j < 4; j++) {
+                movement.turnLeft();
+            }
+            Utils.p("Complete at " + (System.currentTimeMillis() - start));
+        }
+        Utils.p("Average of " + ((System.currentTimeMillis()-total)/15));
     }
 }

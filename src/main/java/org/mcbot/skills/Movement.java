@@ -100,7 +100,7 @@ public class Movement {
     }
 
     public void turnLeft(){
-        p("turn left");
+//        p("turn left");
         facingGoal.x = (getGeneralFacingNum() - 90);
         if (facingGoal.x < -180) {
             facingGoal.x = 90;
@@ -108,7 +108,7 @@ public class Movement {
         faceDirectionGoal();
     }
     public void turnRight(){
-        p("turn right");
+//        p("turn right");
         facingGoal.x = (getGeneralFacingNum() + 90);
         if (facingGoal.x > 180) {
             facingGoal.x = -90;
@@ -150,29 +150,29 @@ public class Movement {
     }
     private void correction() {
         int x = 0; int y = 0;
+        // Set up to turn right if the goal is NORTH and it's on your right
+        if (facingGoal.x == -180 && facing.x > 0) facingGoal.x = 180;
+        // Else turn left if the goal is NORTH and it's on your left
+        else if (facingGoal.x == 180 && facing.x < 0) facingGoal.x = -180;
 
-        // Set up to turn right if the goal is north and it's on your right
-        if (facingGoal.x == -180 && facing.x > 0) {
-            facingGoal.x = 180;
-        }
-        // Else turn left if the goal is north and it's on your left
-        if (facingGoal.x == 180 && facing.x < 0) {
-            facingGoal.x = -180;
-        }
-
-        if(facingGoal.x < facing.x) {
-            x = -1;
-        } else if (facingGoal.x > facing.x) {
-            x = 1;
-        } if(facingGoal.y < facing.y) {
-            y = -1;
-        } else if (facingGoal.y > facing.y) {
-            y = 1;
-        }
         double xDiff = Math.abs(facingGoal.x - facing.x);
         double yDiff = Math.abs(facingGoal.y - facing.y);
-        if (xDiff > 15) x *= 4;
-        if (yDiff > 15) y *= 3;
+
+        if(facingGoal.x < facing.x) x = -1;
+        else if (facingGoal.x > facing.x) x = 1;
+        if(xDiff > 180) x *= -1;
+
+        if(facingGoal.y < facing.y) y = -1;
+        else if (facingGoal.y > facing.y) y = 1;
+
+        // speed multiplier
+        boolean negX = x < 0;
+        x = (int)Math.min(Math.floor(.045*(xDiff*xDiff)+1),22);
+        if(negX) x *= -1;
+        if (yDiff > 5) y *= 2;
+        if (y == -1) y = -2;
+//        Utils.p("X,Y change: " + x + ", " + y + " | X,Y diff: " + xDiff + ", " + yDiff);
+
         if (x == 0 && y != 0) {
             turnYPixels(y);
         } else if (y == 0 && x != 0) {
@@ -297,16 +297,14 @@ public class Movement {
         return false;
     }
     private boolean xCloseEnough() {
-        double factor = 2;
+        double factor = 3;
         if (facingGoal.x == -180) {
-            if (Math.abs(180 - facing.x) < factor) {
-                return true;
-            }
+            if (Math.abs(180 - facing.x) < factor) return true;
         }
         return (Math.abs(facingGoal.x - facing.x) < factor);
     }
     private boolean yCloseEnough() {
-        double factor = 1;
+        double factor = 3;
         return (Math.abs(facingGoal.y - facing.y) < factor);
     }
     public boolean closeEnough() {
