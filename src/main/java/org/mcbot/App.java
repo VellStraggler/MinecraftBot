@@ -7,15 +7,13 @@ import org.mcbot.datatypes.containers.Slot;
 import org.mcbot.skills.*;
 import org.mcbot.wordwork.F3DataReader;
 
-import java.awt.image.BufferedImage;
-
 public class App {
     public static void main(String[] args) {
-        // Set up variables
+        // time to go fullscreen
         Utils.sleep(4000);
+        // Set up variables
         Items items = new Items();
         Blocks blocks = new Blocks(items);
-        // time to go fullscreen
         F3DataReader dataReader = new F3DataReader();
         dataReader.readScreen();
         Movement movement = new Movement(blocks, dataReader);
@@ -27,18 +25,6 @@ public class App {
         //Farming farming = new Farming(movement);
 
         // Do what you want
-        long total = System.currentTimeMillis();
-        for(int i = 0; i < 15; i++) {
-            long start = System.currentTimeMillis();
-            for (int j = 0; j < 4; j++) {
-                movement.turnRight();
-            }
-
-            for (int j = 0; j < 4; j++) {
-                movement.turnLeft();
-            }
-            Utils.p("Complete at " + (System.currentTimeMillis() - start));
-        }
-        Utils.p("Average of " + ((System.currentTimeMillis()-total)/15));
+        mining.mineSquareArea(6);
     }
 }

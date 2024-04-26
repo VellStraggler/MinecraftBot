@@ -76,7 +76,8 @@ public class Mining {
     public void simpleStripMine(int length) {
         for(int i = 0; i < length; i ++) {
             mineWalkingSpace();
-            movement.moveForward(1, false);
+            movement.moveToWhereLooking();
+//            movement.moveForward(1, false);
         }
     }
 
@@ -95,12 +96,12 @@ public class Mining {
             if (turnRight) {
                 movement.turnRight();
                 mineWalkingSpace();
-                movement.moveForward(1);
+                movement.moveToWhereLooking();
                 movement.turnRight();
             } else {
                 movement.turnLeft();
                 mineWalkingSpace();
-                movement.moveForward(1);
+                movement.moveToWhereLooking();
                 movement.turnLeft();
             }
             turnRight = !turnRight;

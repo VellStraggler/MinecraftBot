@@ -95,7 +95,6 @@ public class Movement {
         this.coordinates = (XYZ)screenData.get("Coordinates");
         this.facing = (XY)screenData.get("Facing");
         this.direction = Facing.valueOf(((String)screenData.get("Direction")).toUpperCase());
-//        Utils.p(screenData.toString());
         return screenData;
     }
 
@@ -171,7 +170,6 @@ public class Movement {
         if(negX) x *= -1;
         if (yDiff > 5) y *= 2;
         if (y == -1) y = -2;
-//        Utils.p("X,Y change: " + x + ", " + y + " | X,Y diff: " + xDiff + ", " + yDiff);
 
         if (x == 0 && y != 0) {
             turnYPixels(y);
@@ -282,6 +280,25 @@ public class Movement {
             update();
         }
     }
+    /** Only applies to something on the same plane as the player **/
+    public void moveToWhereLooking() {
+        // Take the x and z of the block before where you're looking at
+        update();
+        setCoordinatesGoal((XYZ)reader.data.get("Target Coordinates"));
+        XYZ curr = getSimplifiedCoordinate(coordinates);
+        // at this point, both the goal and where we are are simplified
+        if (coordinatesGoal.y >= curr.y) {
+            //one block closer
+            if(curr.x == coordinatesGoal.x) {
+                coordinatesGoal.z += (curr.z - coordinatesGoal.z) / Math.abs(curr.z - coordinatesGoal.z);
+            }
+            else {
+                coordinatesGoal.x += (curr.x - coordinatesGoal.x) / Math.abs(curr.x - coordinatesGoal.x);
+            }
+        }
+        coordinatesGoal.y = curr.y;
+        moveToGoal();
+    }
     public void jump() {
         pressAndReleaseKey(JUMP_KEY);
     }
@@ -352,17 +369,30 @@ public class Movement {
                 break;
         }
     }
+    /** Simplifies to the exact bottom center of a block
+     * that holds the given coordinates */
+    public void setCoordinatesGoal(XYZ newGoal) {
+        coordinatesGoal = getSimplifiedCoordinate(newGoal);
+    }
+
+    /** Simplifies to the exact bottom center of a block
+     * that holds the given coordinates */
+    public void setCoordinatesGoal(double x, double y, double z) {
+        setCoordinatesGoal(new XYZ(x,y,z));
+    }
+    /** adds .01 on account of if you are given an integer amount,
+     * such as from a target block. **/
+    public XYZ getSimplifiedCoordinate(XYZ coordinate) {
+        return new XYZ(
+            Math.ceil(coordinate.x + .01) - .5,
+               Math.floor(coordinate.y),
+            Math.ceil(coordinate.z + .01) - .5);
+    }
     /** Holds shift and gets centered with 80% accuracy **/
     public void centerOnBlock() {
         pressKey(SHIFT_KEY);
         double rangeOfMiddle = .1;
-        // Set the goal to the center of the block
-        // -100.9 -> -100.5   100.2 -> 100.5
-        // -100.1 -> -100.5   100.8 -> 100.5
-        coordinatesGoal.x = Math.ceil(coordinates.x) - .5;
-        coordinatesGoal.y = Math.floor(coordinates.y);
-        coordinatesGoal.z = Math.ceil(coordinates.z) - .5;
-        Utils.p(coordinates.toString() + " GOAL: " + coordinatesGoal.toString());
+        setCoordinatesGoal(coordinatesGoal);
         setDirectionalMovementFromFacing();
         long start = System.currentTimeMillis();
         while(!coordinateReached(rangeOfMiddle)) {
