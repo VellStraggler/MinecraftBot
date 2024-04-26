@@ -5,7 +5,7 @@ import org.mcbot.wordwork.F3DataReader;
 import org.mcbot.datatypes.XYZ;
 
 public class Mining {
-    private static final int STRIP_MINE_DEGREE = 40;
+    private static final int STRIP_MINE_DEGREE = 32;
     private Movement movement;
     private F3DataReader reader;
 
@@ -42,7 +42,8 @@ public class Mining {
     private boolean blockInFront(XYZ targBlock, XYZ coords) {
         if (Utils.distanceFrom(targBlock.x, coords.x) == 1 ||
             Utils.distanceFrom(targBlock.z, coords.z) == 1) {
-            if (targBlock.y == coords.y || targBlock.y == coords.y + 1) {
+            double yDist = targBlock.y - Math.floor(coords.y); // Sometimes you're in the air??
+            if (yDist >= 0 && yDist <= 1) {
                 return true;
             }
         }
@@ -59,12 +60,14 @@ public class Mining {
         XYZ targ = null;
         XYZ curr = null;
         for(int i = 0; i < 2; i++) {
+            movement.update(); // redundancy
             targ = (XYZ) reader.data.get("Target Coordinates");
             curr = (XYZ) reader.data.get("Coordinates");
             if (blockInFront(targ, curr)) {
                 mineBlock();
             }
         }
+        movement.centerOnBlock();
     }
     /**
      * Assumes we have a pickaxe in hand and at least one reachable block.
@@ -85,7 +88,7 @@ public class Mining {
     public void mineSquareArea(int length){
         //^>v>^>V>
         boolean turnRight = true;
-        for(int col = 0; col < length; col++) {
+        for(int col = 0; col < length-1; col++) {
             // Mine the length of the column
             simpleStripMine(length);
             // Turn, mine, move forward one, and turn again
@@ -102,5 +105,6 @@ public class Mining {
             }
             turnRight = !turnRight;
         }
+        simpleStripMine(length);
     }
 }

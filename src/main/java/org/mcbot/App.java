@@ -17,19 +17,18 @@ public class App {
         Blocks blocks = new Blocks(items);
         // time to go fullscreen
         F3DataReader dataReader = new F3DataReader();
-        dataReader.PrintWholeScreenContents();
         dataReader.readScreen();
         Movement movement = new Movement(blocks, dataReader);
-        Inventory inventory = new Inventory(items, movement);
-        inventory.readContents();
+        //Inventory inventory = new Inventory(items, movement);
+        //inventory.readContents();
         // Initialize Task Types
         Mining mining = new Mining(movement);
-        Building building = new Building(movement);
-        Farming farming = new Farming(movement);
+        //Building building = new Building(movement);
+        //Farming farming = new Farming(movement);
 
         // Do what you want
 
-        mining.mineSquareArea(5);
+        mining.mineSquareArea(6);
         Utils.p("Complete");
     }
 }

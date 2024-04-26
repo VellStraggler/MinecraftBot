@@ -59,7 +59,6 @@ Minecraft.
 - crafting
 - attacking (different from combat)
 - build schematics
-- Image Pre-processing
 ## Ideas that are out of scope:
 - Use of vehicles
 - Picking the best available tools

@@ -193,7 +193,6 @@ public class Movement {
     }
 
     public void moveForward(int amount) {
-        p("move forward " + amount);
         moveForward(amount, true);
     }
 
@@ -235,6 +234,7 @@ public class Movement {
      * @param amount
      */
     public void moveForward(int amount, boolean jumpingAllowed, boolean withCentering) {
+        p("move forward " + amount);
         // Set goal
         int xChange = 0;
         int zChange = 0;
@@ -354,26 +354,28 @@ public class Movement {
                 break;
         }
     }
+    /** Holds shift and gets centered with 80% accuracy **/
     public void centerOnBlock() {
-        // hold shift and get mostly centered
         pressKey(SHIFT_KEY);
-        double rangeOfMiddle = .1; //down from .2
-        // Set the goal
-        coordinatesGoal.x = ((int)coordinates.x) - .5;
-        coordinatesGoal.y = coordinates.y;
-        coordinatesGoal.z = ((int)coordinates.z) - .5;
+        double rangeOfMiddle = .1;
+        // Set the goal to the center of the block
+        // -100.9 -> -100.5   100.2 -> 100.5
+        // -100.1 -> -100.5   100.8 -> 100.5
+        coordinatesGoal.x = Math.ceil(coordinates.x) - .5;
+        coordinatesGoal.y = Math.floor(coordinates.y);
+        coordinatesGoal.z = Math.ceil(coordinates.z) - .5;
+        Utils.p(coordinates.toString() + " GOAL: " + coordinatesGoal.toString());
         setDirectionalMovementFromFacing();
         long start = System.currentTimeMillis();
         while(!coordinateReached(rangeOfMiddle)) {
             releaseAllKeys();
             pressKey(SHIFT_KEY);
             // If centering takes too long, jump and try again.
-            if (System.currentTimeMillis() > start + 1000L) {
+            if (System.currentTimeMillis() > start + 2000L) {
                 pressKey(JUMP_KEY);
                 Utils.sleep(25);
                 start += 2000L;
             }
-            // I don't know why xDown and xUp are switched, really
             if (coordinatesGoal.x > coordinates.x + rangeOfMiddle)
                 pressKey(xUp);
             else if (coordinatesGoal.x < coordinates.x - rangeOfMiddle)
@@ -385,7 +387,7 @@ public class Movement {
             update();
         }
         releaseAllKeys();
-        Utils.sleep(150);
+        Utils.sleep(100);
 
     }
     /** Simply press the forward key if it
