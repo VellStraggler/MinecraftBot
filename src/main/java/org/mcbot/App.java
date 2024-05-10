@@ -26,8 +26,9 @@ public class App {
 
         // Do what you want
         Utils.beep();
-        mining.mineSquareArea(5);
+//        mining.mineSquareArea(5);
+        building.bridge(16,true);
+        building.bridge(8,false);
         Utils.beep();
-        //building.bridge();
     }
 }

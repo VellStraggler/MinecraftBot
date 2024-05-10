@@ -63,8 +63,13 @@ public class Utils {
             p("Unable to sleep? " + e.getMessage());
         }
     }
+    /** It's actually 2**/
     public static void sleepOneFrame() {
-        sleep(1000/30);
+        sleep(1000/60);
+    }
+    public static void sleepTwoFrames() {
+        sleepOneFrame();
+        sleepOneFrame();
     }
 
     /**
@@ -76,7 +81,7 @@ public class Utils {
         try {
             Robot input = new Robot();
             input.keyPress(inputEvent);
-            sleep(40);
+            sleepTwoFrames();
             input.keyRelease(inputEvent);
         } catch (AWTException ignored) {}
     }

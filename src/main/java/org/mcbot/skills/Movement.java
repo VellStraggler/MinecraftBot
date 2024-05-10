@@ -10,8 +10,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Stack;
 
-import static org.mcbot.Utils.p;
-
 /**
  * Takes rotation values 'facing' and base coordinates
  * to discover the orientation of the player. Requires
@@ -24,13 +22,13 @@ public class Movement {
     //                   |
     //               South: Z 0
     public static XY SCREEN_CENTER = new XY(Utils.SCREEN_RESOLUTION.x/2, Utils.SCREEN_RESOLUTION.y/2);
-    private static final int FORWARD_KEY = KeyEvent.VK_W;
-    private static final int RIGHT_KEY = KeyEvent.VK_D;
-    private static final int LEFT_KEY = KeyEvent.VK_A;
+    public static final int FORWARD_KEY = KeyEvent.VK_W;
+    public static final int RIGHT_KEY = KeyEvent.VK_D;
+    public static final int LEFT_KEY = KeyEvent.VK_A;
     public static final int BACKWARD_KEY = KeyEvent.VK_S;
     public static final int SHIFT_KEY = KeyEvent.VK_SHIFT;
     public static final int INVENTORY_KEY = KeyEvent.VK_E;
-    private static final int JUMP_KEY = KeyEvent.VK_SPACE;
+    public static final int JUMP_KEY = KeyEvent.VK_SPACE;
 
     private static final double DEFAULT_ACCURACY = 0.8;
 
@@ -95,7 +93,7 @@ public class Movement {
      */
     public F3Data update() {
         // wait to prevent compounded movement
-        Utils.sleep(15);
+        Utils.sleepOneFrame();
         F3Data screenData = reader.readScreen();
         this.coordinates = (XYZ)screenData.get("Coordinates");
         this.facing = (XY)screenData.get("Facing");
@@ -281,6 +279,7 @@ public class Movement {
         this.jumpingAllowed = false;
     }
     public void faceDirectionGoal() {
+        update();
         while(!closeEnough()) {
             correction();
             update();
@@ -297,7 +296,7 @@ public class Movement {
         // Take the x and z of the block before where you're looking at
         update();
         setCoordinatesGoal(getTargetCoordinates());
-        XYZ curr = getSimplifiedCoordinate(coordinates);
+        XYZ curr = getSimplifiedCoordinates(coordinates);
         // at this point, both the goal and where we are are simplified
         if (coordinatesGoal.y >= curr.y) {
             //one block closer
@@ -385,7 +384,7 @@ public class Movement {
     /** Simplifies to the exact bottom center of a block
      * that holds the given coordinates */
     public void setCoordinatesGoal(XYZ newGoal) {
-        coordinatesGoal = getSimplifiedCoordinate(newGoal);
+        coordinatesGoal = getSimplifiedCoordinates(newGoal);
     }
 
     /** Simplifies to the exact bottom center of a block
@@ -395,20 +394,25 @@ public class Movement {
     }
     /** adds .01 on account of if you are given an integer amount,
      * such as from a target block. **/
-    public XYZ getSimplifiedCoordinate(XYZ coordinate) {
+    public XYZ getSimplifiedCoordinates(XYZ coordinate) {
         return new XYZ(
             Math.ceil(coordinate.x + .01) - .5,
                Math.floor(coordinate.y),
             Math.ceil(coordinate.z + .01) - .5);
     }
+    public XYZ getSimplifiedCoordinates() {
+        return getSimplifiedCoordinates(getCoordinates());
+    }
     public void centerOnBlock() {
         centerOnBlock(.8);
     }
-    /** Holds shift and gets centered with a certain amount of accuracy **/
+    /** Holds shift and gets centered with a certain amount of accuracy.
+     * Centers on the coordinatesGoal, not the current block **/
     public void centerOnBlock(double accuracy) {
         pressKey(SHIFT_KEY);
         double rangeOfMiddle = (1 - accuracy)/2;
-        setCoordinatesGoal(coordinatesGoal);
+        //setCoordinatesGoal(coordinatesGoal);
+        setCoordinatesGoal(getSimplifiedCoordinates());
         setDirectionalMovementFromFacing();
         long start = System.currentTimeMillis();
         while(!coordinateReached(rangeOfMiddle)) {
@@ -425,13 +429,13 @@ public class Movement {
             update();
         }
         releaseAllKeys();
-//        Utils.sleep(20);
 
     }
     /** Simply press the forward key if it
      * hasn't already been pressed**/
     private void moveForward() {
         pressKey(FORWARD_KEY);
+        Utils.sleepOneFrame();
     }
 
     /**
@@ -439,9 +443,15 @@ public class Movement {
      * if it isn't already there.
      */
     public void pressKey(int keyValue) {
+        Utils.p("Pressing " + keyValue);
         if(!keyStack.contains(keyValue)) {
+            Utils.p(" pressing successful");
             input.keyPress(keyValue);
             keyStack.add(keyValue);
+            Utils.p(" current stack: " + keyStack.toString());
+        }
+        else {
+            Utils.p(" pressing failed");
         }
     }
 
@@ -457,10 +467,19 @@ public class Movement {
     /**
      * Releases all keys stored to the keyStack
      */
-    private void releaseAllKeys() {
+    public void releaseAllKeys() {
+        Utils.p("releasing ALL\n current stack: " + keyStack.toString());
         while(!keyStack.isEmpty()) {
             releaseKey(keyStack.pop());
+            Utils.sleepOneFrame();
         }
+        input.keyRelease(BACKWARD_KEY);
+        input.keyRelease(SHIFT_KEY);
+        input.keyRelease(FORWARD_KEY);
+        input.keyRelease(LEFT_KEY);
+        input.keyRelease(RIGHT_KEY);
+        input.keyRelease(JUMP_KEY);
+        Utils.sleepOneFrame();
     }
 
     /**
@@ -492,7 +511,7 @@ public class Movement {
     }
     public void clickHere() {
         holdClick();
-        Utils.sleep(30);
+        Utils.sleepTwoFrames();
         releaseClick();
     }
     public void holdClick() {
@@ -503,7 +522,7 @@ public class Movement {
     }
     public void rightClickHere() {
         input.mousePress(InputEvent.BUTTON3_DOWN_MASK);
-        Utils.sleep(30);
+        Utils.sleepOneFrame();
         input.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
     }
     public void clickHere(XY xy) {
@@ -516,14 +535,20 @@ public class Movement {
 
     public void pressAndReleaseKey(int inputEvent) {
         input.keyPress(inputEvent);
-        Utils.sleep(20);
+        Utils.sleepTwoFrames();
         input.keyRelease(inputEvent);
     }
     public void releaseKey(int inputEvent){
+        Utils.p("Removing " + inputEvent);
+        Utils.p(" current stack: " + keyStack.toString());
         if (keyStack.contains(inputEvent)) {
-            keyStack.remove(inputEvent);
+            Utils.p(" Removing " + inputEvent);
+            keyStack.removeElement(inputEvent);
+            input.keyRelease(inputEvent);
+            Utils.sleepTwoFrames();
+        } else {
+            Utils.p(" Removal FAILED");
         }
-        input.keyRelease(inputEvent);
     }
 
 }
