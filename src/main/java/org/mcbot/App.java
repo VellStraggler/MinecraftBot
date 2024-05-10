@@ -21,10 +21,13 @@ public class App {
         //inventory.readContents();
         // Initialize Task Types
         Mining mining = new Mining(movement);
-        //Building building = new Building(movement);
+        Building building = new Building(movement);
         //Farming farming = new Farming(movement);
 
         // Do what you want
-        mining.mineSquareArea(6);
+        Utils.beep();
+        mining.mineSquareArea(5);
+        Utils.beep();
+        //building.bridge();
     }
 }

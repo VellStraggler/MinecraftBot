@@ -21,7 +21,7 @@ public class Building {
      * Assumes you are on a block-slot and that you have enough
      * blocks to get to the other side.
      */
-    public void bridge() {
+    public void bridge(int amt) {
         //setup
         movement.setYFacingGoal(81);
         movement.turnRight();
@@ -30,9 +30,13 @@ public class Building {
 
         movement.pressKey(Movement.SHIFT_KEY);
         movement.pressKey(Movement.BACKWARD_KEY);
+        int placed = 0;
         while(true) {
             movement.rightClickHere();
         }
+    }
+    public void quickBridge() {
+
     }
     /** It is assumed that you are already falling
      *  and have a bucket in-hand. **/

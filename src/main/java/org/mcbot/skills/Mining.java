@@ -6,15 +6,15 @@ import org.mcbot.datatypes.XYZ;
 
 public class Mining {
     private static final int STRIP_MINE_DEGREE = 32;
-    private Movement movement;
+    private Movement mvt;
     private F3DataReader reader;
 
-    public Mining(Movement movement, F3DataReader reader) {
-        this.movement = movement;
+    public Mining(Movement mvt, F3DataReader reader) {
+        this.mvt = mvt;
         this.reader = reader;
     }
-    public Mining(Movement movement) {
-        this(movement, movement.getReader());
+    public Mining(Movement mvt) {
+        this(mvt, mvt.getReader());
     }
 
     /**
@@ -23,16 +23,17 @@ public class Mining {
      */
     public void mineBlock() {
         // record current target coordinates
-        reader.readScreen();
-        XYZ currentBlock = (XYZ) reader.data.get("Target Coordinates");
+//        reader.readScreen();
+        mvt.update();
         //wait to catch up a bit
-        Utils.sleep(20);
+        XYZ currentBlock = (XYZ) reader.data.get("Target Coordinates");
         //left-click until targeted-block changes
-        movement.holdClick();
+        mvt.holdClick();
         while( currentBlock.equals( (XYZ)reader.data.get("Target Coordinates"))) {
-            movement.update();
+            mvt.update();
         }
-        movement.releaseClick();
+        mvt.releaseClick();
+        Utils.sleepOneFrame();
     }
 
     /** Checks if there is a block in the walking space in front
@@ -54,20 +55,20 @@ public class Mining {
      * Sets correct facing direction.
      */
     public void mineWalkingSpace() {
-        movement.setYFacingGoal(STRIP_MINE_DEGREE);
-        movement.centerOnBlock();
-        movement.faceDirectionGoal();
-        XYZ targ = null;
-        XYZ curr = null;
-        for(int i = 0; i < 2; i++) {
-            movement.update(); // redundancy
-            targ = (XYZ) reader.data.get("Target Coordinates");
-            curr = (XYZ) reader.data.get("Coordinates");
+        mvt.setYFacingGoal(STRIP_MINE_DEGREE);
+        mvt.faceDirectionGoal();
+        mvt.centerOnBlock(.5);
+        XYZ targ = mvt.getTargetCoordinates();
+        XYZ curr = mvt.getCoordinates();
+        while(blockInFront(targ, curr)) {
+            mvt.faceDirectionGoal(); // redundancy
+            targ = mvt.getTargetCoordinates();
+            curr = mvt.getCoordinates();
             if (blockInFront(targ, curr)) {
                 mineBlock();
             }
         }
-        movement.centerOnBlock();
+        mvt.centerOnBlock();
     }
     /**
      * Assumes we have a pickaxe in hand and at least one reachable block.
@@ -76,8 +77,7 @@ public class Mining {
     public void simpleStripMine(int length) {
         for(int i = 0; i < length; i ++) {
             mineWalkingSpace();
-            movement.moveToWhereLooking();
-//            movement.moveForward(1, false);
+            mvt.moveForward(1,false,.5);
         }
     }
 
@@ -94,15 +94,15 @@ public class Mining {
             simpleStripMine(length);
             // Turn, mine, move forward one, and turn again
             if (turnRight) {
-                movement.turnRight();
+                mvt.turnRight();
                 mineWalkingSpace();
-                movement.moveToWhereLooking();
-                movement.turnRight();
+                mvt.moveForward(1);
+                mvt.turnRight();
             } else {
-                movement.turnLeft();
+                mvt.turnLeft();
                 mineWalkingSpace();
-                movement.moveToWhereLooking();
-                movement.turnLeft();
+                mvt.moveForward(1);
+                mvt.turnLeft();
             }
             turnRight = !turnRight;
         }

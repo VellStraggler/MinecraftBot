@@ -32,6 +32,8 @@ public class Movement {
     public static final int INVENTORY_KEY = KeyEvent.VK_E;
     private static final int JUMP_KEY = KeyEvent.VK_SPACE;
 
+    private static final double DEFAULT_ACCURACY = 0.8;
+
 
     private Blocks blocks;
     private Robot input;
@@ -43,12 +45,15 @@ public class Movement {
     private Stack<Integer> keyStack;
     private XY facing;
     private XYZ coordinates;
+    private XYZ targetCoordinates;
     private Facing direction;
 
     private XY facingGoal;
     // facingGoal.y is widely ignored rn
     private XYZ coordinatesGoal;
     private F3DataReader reader;
+
+    private boolean jumpingAllowed = false;
 
     /** Sets movement sensitivity to 1, and accuracy to 0.
      * Both of these will slowly be increased until the quickest,
@@ -85,21 +90,21 @@ public class Movement {
         return reader;
     }
 
-    /** Extracts what it needs from the given dataset,
-     * facing and coordinates. TAKES A SCREENSHOT
+    /** Takes a screenshot, and then extracts what it needs from the
+     *  given dataset, facing and coordinates.
      */
     public F3Data update() {
         // wait to prevent compounded movement
-        Utils.sleep(10);
+        Utils.sleep(15);
         F3Data screenData = reader.readScreen();
         this.coordinates = (XYZ)screenData.get("Coordinates");
         this.facing = (XY)screenData.get("Facing");
         this.direction = Facing.valueOf(((String)screenData.get("Direction")).toUpperCase());
+        this.targetCoordinates = (XYZ)screenData.get("Target Coordinates");
         return screenData;
     }
 
     public void turnLeft(){
-//        p("turn left");
         facingGoal.x = (getGeneralFacingNum() - 90);
         if (facingGoal.x < -180) {
             facingGoal.x = 90;
@@ -107,14 +112,17 @@ public class Movement {
         faceDirectionGoal();
     }
     public void turnRight(){
-//        p("turn right");
         facingGoal.x = (getGeneralFacingNum() + 90);
         if (facingGoal.x > 180) {
             facingGoal.x = -90;
         }
         faceDirectionGoal();
     }
-    public void turnPixels(int x, int y) {
+    public void turnAround() {
+        turnRight();
+        turnRight(); // ;D
+    }
+    private void turnPixels(int x, int y) {
         int newX; int newY;
         if (x < 0) {
             newX = 18 + x;
@@ -128,7 +136,7 @@ public class Movement {
         }
         moveMouseHere(newX, newY);
     }
-    public void turnXPixels(int amount) {
+    private void turnXPixels(int amount) {
         // x is between 18 and 19
         // y is between 6 and 7
         if (amount < 0) {
@@ -138,7 +146,7 @@ public class Movement {
         }
     }
     /** should NOT be used in tangent with turnXPixels **/
-    public void turnYPixels(int amount) {
+    private void turnYPixels(int amount) {
         // x is between 18 and 19
         // y is between 6 and 7
         if (amount < 0) {
@@ -191,7 +199,7 @@ public class Movement {
     }
 
     public void moveForward(int amount) {
-        moveForward(amount, true);
+        moveForward(amount, false);
     }
 
     public void pathFinding(XYZ goal) {
@@ -223,7 +231,7 @@ public class Movement {
         turnYPixels(300);
     }
     public void moveForward(int amount, boolean jumpingAllowed) {
-        moveForward(amount, jumpingAllowed, true);
+        moveForward(amount, jumpingAllowed, DEFAULT_ACCURACY);
     }
     /**
      * Aligns where player is looking and standing,
@@ -231,8 +239,8 @@ public class Movement {
      * Does not account for y-level, and will jump if need be
      * @param amount
      */
-    public void moveForward(int amount, boolean jumpingAllowed, boolean withCentering) {
-        p("move forward " + amount);
+    public void moveForward(int amount, boolean jumpingAllowed, double centeringAccuracy) {
+        this.jumpingAllowed = jumpingAllowed;
         // Set goal
         int xChange = 0;
         int zChange = 0;
@@ -253,15 +261,12 @@ public class Movement {
 
         faceDirectionGoal();
         // Stay on target!
-        centerOnBlock();
+        centerOnBlock(centeringAccuracy);
         coordinatesGoal.x = coordinates.x + xChange;
         coordinatesGoal.z = coordinates.z + zChange;
         moveToGoal();
-        if(withCentering) {
-            centerOnBlock(); // won't matter if we do it twice
-        }
+        centerOnBlock(centeringAccuracy); // won't matter if we do it twice
     }
-
     /**
      * Walks forward until a goal is reached.
      * Jumps if needed.
@@ -270,21 +275,28 @@ public class Movement {
         moveForward();
         while (!coordinateReached()) {
             update();
-            if (shouldJumpThere()) jump();
+            if (this.jumpingAllowed && shouldJumpThere()) jump();
         }
         releaseAllKeys();
+        this.jumpingAllowed = false;
     }
     public void faceDirectionGoal() {
         while(!closeEnough()) {
             correction();
             update();
         }
+        Utils.sleepOneFrame(); //redundancy
+        correction(); //redundancy
     }
+    public XYZ getTargetCoordinates() {
+        return ((XYZ)reader.data.get("Target Coordinates"));
+    }
+    public XYZ getCoordinates() { return (XYZ)reader.data.get("Coordinates");}
     /** Only applies to something on the same plane as the player **/
     public void moveToWhereLooking() {
         // Take the x and z of the block before where you're looking at
         update();
-        setCoordinatesGoal((XYZ)reader.data.get("Target Coordinates"));
+        setCoordinatesGoal(getTargetCoordinates());
         XYZ curr = getSimplifiedCoordinate(coordinates);
         // at this point, both the goal and where we are are simplified
         if (coordinatesGoal.y >= curr.y) {
@@ -303,12 +315,13 @@ public class Movement {
         pressAndReleaseKey(JUMP_KEY);
     }
     private boolean shouldJumpThere() {
-        double y = ((XYZ)(reader.data.get("Target Coordinates"))).y;
+        double y = getTargetCoordinates().y;
         // same y actually means there is a block to jump
         boolean facingBreathable = blocks.get((String)reader.data.get("Target Block")).breathable;
-        if (y == (int)(coordinates.y + .1)) {
+        double yDist = y - Math.floor(coordinates.y);
+        if (yDist >= 0 && yDist < 1) {
             return !facingBreathable;
-        } else if (y == (int)(coordinates.y + 1.1)) {
+        } else if (yDist >= 1 && yDist < 2) {
             return facingBreathable;
         }
         return false;
@@ -388,22 +401,19 @@ public class Movement {
                Math.floor(coordinate.y),
             Math.ceil(coordinate.z + .01) - .5);
     }
-    /** Holds shift and gets centered with 80% accuracy **/
     public void centerOnBlock() {
+        centerOnBlock(.8);
+    }
+    /** Holds shift and gets centered with a certain amount of accuracy **/
+    public void centerOnBlock(double accuracy) {
         pressKey(SHIFT_KEY);
-        double rangeOfMiddle = .1;
+        double rangeOfMiddle = (1 - accuracy)/2;
         setCoordinatesGoal(coordinatesGoal);
         setDirectionalMovementFromFacing();
         long start = System.currentTimeMillis();
         while(!coordinateReached(rangeOfMiddle)) {
             releaseAllKeys();
             pressKey(SHIFT_KEY);
-            // If centering takes too long, jump and try again.
-            if (System.currentTimeMillis() > start + 2000L) {
-                pressKey(JUMP_KEY);
-                Utils.sleep(25);
-                start += 2000L;
-            }
             if (coordinatesGoal.x > coordinates.x + rangeOfMiddle)
                 pressKey(xUp);
             else if (coordinatesGoal.x < coordinates.x - rangeOfMiddle)
@@ -415,7 +425,7 @@ public class Movement {
             update();
         }
         releaseAllKeys();
-        Utils.sleep(100);
+//        Utils.sleep(20);
 
     }
     /** Simply press the forward key if it

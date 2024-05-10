@@ -80,8 +80,12 @@ public class Utils {
             input.keyRelease(inputEvent);
         } catch (AWTException ignored) {}
     }
+    /** This only applies to X and Z coordinates!! **/
     public static int distanceFrom(double here, double there) {
         int ans = (int)(Math.floor(here) - Math.floor(there));
         return Math.abs(ans);
+    }
+    public static void beep() {
+        Toolkit.getDefaultToolkit().beep();
     }
 }
