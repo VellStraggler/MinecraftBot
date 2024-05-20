@@ -25,7 +25,7 @@ public class Farming {
      * It is assumed that you are holding the crop in SLOT 2.
      * This will go down a line at a time in the field, so start at
      * one corner with the farm to your right
-     * @param crop
+     * @param newCrop
      * @param seconds
      */
     public void farmAndPlantCrop(String newCrop, int seconds) {

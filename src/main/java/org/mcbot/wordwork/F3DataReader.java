@@ -39,7 +39,8 @@ public class F3DataReader {
     public F3DataReader() {
     }
     /** Reads every character shown on screen **/
-    public void PrintWholeScreenContents() {
+    public String PrintWholeScreenContents() {
+        String sum = "";
         Map<String, Object> data = new HashMap<>();
         screen = ImageWork.takeScreenshot();
         setF3OnIfOff();
@@ -47,8 +48,10 @@ public class F3DataReader {
         for (int y = START_Y; y < END_Y; y+= (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)) {
             String line = new CharRecognition(screen, new XY(LEFT_X, y), RGB.F3_WHITE).readToImageEdge();
             Utils.p(line);
+            sum += line + "\n";
         }
         Utils.p("\n\n");
+        return sum;
     }
     /** Takes a screenshot and returns the data from it **/
     public F3Data readScreen() {
@@ -105,7 +108,7 @@ public class F3DataReader {
                     if(line.contains(key)) {
                         Object object;
                         switch(key) {
-                            case ("Targeted"):
+                            case ("Targeted Block"):
                                 found = true;
                                 double x1 = Integer.parseInt(line.substring(line.indexOf(':') + 2, line.indexOf(',')));
                                 line = line.substring(line.indexOf(',') + 2);
@@ -114,7 +117,7 @@ public class F3DataReader {
                                 data.put("Target Coordinates", new XYZ(x1, y1, z1));
                                 // the targeted block type is always right under this
                                 line = new CharRecognition(screen, new XY(RIGHT_X, y + (CharRecognition.NEW_LINE * CharRecognition.PIXEL_WIDTH)), RGB.F3_WHITE).readToImageEdge();
-                                data.put("Target Block", line.substring(line.indexOf(':')+1));
+                                data.put("Targeted Block", line.substring(line.indexOf(':')+1));
                                 break;
                         }
                     }

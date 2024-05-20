@@ -23,17 +23,19 @@ public class Mining {
      */
     public void mineBlock() {
         // record current target coordinates
-//        reader.readScreen();
         mvt.update();
         //wait to catch up a bit
         XYZ currentBlock = (XYZ) reader.data.get("Target Coordinates");
-        //left-click until targeted-block changes
-        mvt.holdClick();
-        while( currentBlock.equals( (XYZ)reader.data.get("Target Coordinates"))) {
-            mvt.update();
+        // cancel if it's too far away
+        if (mvt.blockInRange()) {
+            //left-click until targeted-block changes
+            mvt.holdClick();
+            while(currentBlock.equals( (XYZ)reader.data.get("Target Coordinates"))) {
+                mvt.update();
+            }
+            mvt.releaseClick();
+            Utils.sleepOneFrame();
         }
-        mvt.releaseClick();
-        Utils.sleepOneFrame();
     }
 
     /** Checks if there is a block in the walking space in front
@@ -56,12 +58,12 @@ public class Mining {
      */
     public void mineWalkingSpace() {
         mvt.setYFacingGoal(STRIP_MINE_DEGREE);
-        mvt.faceDirectionGoal();
+        mvt.faceFacingGoal();
         mvt.centerOnBlock(.5);
         XYZ targ = mvt.getTargetCoordinates();
         XYZ curr = mvt.getCoordinates();
         while(blockInFront(targ, curr)) {
-            mvt.faceDirectionGoal(); // redundancy
+            mvt.faceFacingGoal(); // redundancy
             targ = mvt.getTargetCoordinates();
             curr = mvt.getCoordinates();
             if (blockInFront(targ, curr)) {

@@ -30,8 +30,12 @@ public class Movement {
     public static final int INVENTORY_KEY = KeyEvent.VK_E;
     public static final int JUMP_KEY = KeyEvent.VK_SPACE;
 
+    private static final int MAX_UPWARD_Y = -6;
     private static final double DEFAULT_ACCURACY = 0.8;
-
+    private static final int DEFAULT_Y_DEGREE = 53;
+    private static final int WANDER_DEGREE = 50;
+    private static final int FLOOR_DEGREE = 64;
+    private static final int WALL_DEGREE = 30;
 
     private Blocks blocks;
     private Robot input;
@@ -45,6 +49,8 @@ public class Movement {
     private XYZ coordinates;
     private XYZ targetCoordinates;
     private Facing direction;
+    private String targetBlock;
+    private Surface surface; //This is the kind of surface you're looking at
 
     private XY facingGoal;
     // facingGoal.y is widely ignored rn
@@ -70,7 +76,7 @@ public class Movement {
 
             this.coordinatesGoal = new XYZ(coordinates);
             if (facing != null) {
-                this.facingGoal = new XY(facing.x, 55);
+                this.facingGoal = new XY(facing.x, DEFAULT_Y_DEGREE);
             }
         }
         this.keyStack = new Stack<>();
@@ -95,26 +101,93 @@ public class Movement {
         // wait to prevent compounded movement
         Utils.sleepOneFrame();
         F3Data screenData = reader.readScreen();
-        this.coordinates = (XYZ)screenData.get("Coordinates");
-        this.facing = (XY)screenData.get("Facing");
-        this.direction = Facing.valueOf(((String)screenData.get("Direction")).toUpperCase());
-        this.targetCoordinates = (XYZ)screenData.get("Target Coordinates");
+        try {
+            setValues(screenData);
+        } catch(NullPointerException tryagain) {
+            // Only try one more time.
+            Utils.sleepTwoFrames();
+            screenData = reader.readScreen();
+            setValues(screenData);
+        }
         return screenData;
     }
+    private void setValues(F3Data screenData) {
+        this.coordinates = (XYZ) screenData.get("Coordinates");
+        this.facing = (XY) screenData.get("Facing");
+        this.direction = Facing.valueOf(((String) screenData.get("Direction")).toUpperCase());
+        this.targetCoordinates = (XYZ) screenData.get("Target Coordinates");
+        this.targetBlock = (String) screenData.get("Targeted Block");
+        setSurface();
+    }
+    /** Look and walk around until you find something of interest.**/
+    public void wander(int seconds) {
+        seconds *= 1000;
+        // set up to see the blocks directly in front of you
+        facingGoal.x = (getGeneralFacingNum());
+        faceNewYFacingGoal(WANDER_DEGREE);
+        // if it's not on the ground, it's in the way.
+        long startTime = System.currentTimeMillis();
+        while(System.currentTimeMillis() < startTime + seconds) {
+            wanderStep();
+        }
+    }
+    public void wanderStep() {
+        centerOnBlock();
+        // take a look at what we got in front of us
+        boolean wall = false;
+        boolean floor = false;
+        if(facingGoal.y != FLOOR_DEGREE) {
+            wall = surface == Surface.WALL;
+            faceNewYFacingGoal(FLOOR_DEGREE);
+            floor = surface == Surface.FLOOR;
+        } else {
+            floor = surface == Surface.FLOOR;
+            faceNewYFacingGoal(WALL_DEGREE);
+            wall = surface == Surface.WALL;
+        }
 
+        // if the floor is visible, there is no stair
+        if (wall) {
+            turnRandom();
+        } else if (floor) {
+            moveForward(1);
+        } else {
+            moveForward(1, true);
+        }
+    }
+    private void setSurface() {
+        if (targetCoordinates.y == coordinates.y -1){
+            surface = Surface.FLOOR;
+        } else if (targetCoordinates.y == coordinates.y){
+            surface = Surface.STAIRS;
+        } else if(targetCoordinates.y > coordinates.y) {
+            surface = Surface.WALL;
+        } else {
+            surface = Surface.HOLE;
+        }
+    }
+    public Surface getSurface() {
+        return surface;
+    }
+    public void turnRandom() {
+        double ran = Math.random();
+        if (ran >= .75) turnRight();
+        else if (ran >= .5) turnLeft();
+        else if (ran >= .25) turnAround();
+    }
     public void turnLeft(){
         facingGoal.x = (getGeneralFacingNum() - 90);
         if (facingGoal.x < -180) {
             facingGoal.x = 90;
         }
-        faceDirectionGoal();
+        faceFacingGoal();
     }
     public void turnRight(){
         facingGoal.x = (getGeneralFacingNum() + 90);
         if (facingGoal.x > 180) {
             facingGoal.x = -90;
         }
-        faceDirectionGoal();
+        faceFacingGoal();
     }
     public void turnAround() {
         turnRight();
@@ -128,9 +201,9 @@ public class Movement {
             newX = 19 + x;
         }
         if (y < 0) {
-            newY = 6;
+            newY = 6 + y;
         } else {
-            newY = 7;
+            newY = 7 + y;
         }
         moveMouseHere(newX, newY);
     }
@@ -145,8 +218,8 @@ public class Movement {
     }
     /** should NOT be used in tangent with turnXPixels **/
     private void turnYPixels(int amount) {
-        // x is between 18 and 19
-        // y is between 6 and 7
+        // middle x is between 18 and 19
+        // middle y is between 6 and 7
         if (amount < 0) {
             moveMouseHere(19, 6 + amount);
         } else {
@@ -174,7 +247,9 @@ public class Movement {
         boolean negX = x < 0;
         x = (int)Math.min(Math.floor(.045*(xDiff*xDiff)+1),22);
         if(negX) x *= -1;
-        if (yDiff > 5) y *= 2;
+        boolean negY = y < 0;
+        y = (int)Math.min(Math.floor(.015*(yDiff*yDiff)+1),22);
+        if(negY) y *= -1;
         if (y == -1) y = -2;
 
         if (x == 0 && y != 0) {
@@ -184,6 +259,7 @@ public class Movement {
         } else if (y != 0) {
             turnPixels(x, y);
         }
+        Utils.sleepOneFrame();
     }
 
     /** Useful y-rotations -
@@ -199,29 +275,12 @@ public class Movement {
     public void moveForward(int amount) {
         moveForward(amount, false);
     }
-
-    public void pathFinding(XYZ goal) {
-        // get the z change
-        double zChange = goal.z - coordinates.z;
-        if (zChange < 0) {
-
-        }
-        // determine north or south
-        // get the x change
-        // determine east or west
-    }
-    public void destructivePathFinding(XYZ goal) {
-
-    }
-
     /** Snaps the camera up with frightening speed. */
     public void lookUp() {
         // We know it will immediately hit the top after 80 runs
         // without screenshots
-        int i = 0;
-        while (i < 80) {
-            turnYPixels(-6);
-            i++;
+        for (int i = 0; i < 80; i++) {
+            turnYPixels(MAX_UPWARD_Y);
         }
     }
     /** Snaps camera down with frightening speed. */
@@ -257,7 +316,7 @@ public class Movement {
         }
         facingGoal.x = getGeneralFacingNum();
 
-        faceDirectionGoal();
+        faceFacingGoal();
         // Stay on target!
         centerOnBlock(centeringAccuracy);
         coordinatesGoal.x = coordinates.x + xChange;
@@ -271,21 +330,41 @@ public class Movement {
      */
     private void moveToGoal() {
         moveForward();
+        long start = System.currentTimeMillis();
+        XYZ current = getExactCoordinates();
         while (!coordinateReached()) {
             update();
             if (this.jumpingAllowed && shouldJumpThere()) jump();
+            //check to make sure we're moving at least a block every second
+            if (System.currentTimeMillis() > start + 1000) {
+                if (getExactCoordinates().equals(current)) {
+                    break;
+                } else {
+                    current = getExactCoordinates();
+                    start = System.currentTimeMillis();
+                }
+            }
         }
         releaseAllKeys();
         this.jumpingAllowed = false;
     }
-    public void faceDirectionGoal() {
+    /** updates! **/
+    public void faceNewYFacingGoal(int y) {
+        setYFacingGoal(y);
+        faceFacingGoal();
+    }
+    /** updates! **/
+    public void faceFacingGoal() {
         update();
-        while(!closeEnough()) {
+        while(!facingCloseEnough()) {
             correction();
             update();
         }
-        Utils.sleepOneFrame(); //redundancy
-        correction(); //redundancy
+    }
+    public Block getTargetBlock() {
+        if(!blocks.contains(targetBlock)) {
+            blocks.addToMap(targetBlock, new Block(null, false, "unknown", false));
+        } return blocks.get(targetBlock);
     }
     public XYZ getTargetCoordinates() {
         return ((XYZ)reader.data.get("Target Coordinates"));
@@ -296,7 +375,7 @@ public class Movement {
         // Take the x and z of the block before where you're looking at
         update();
         setCoordinatesGoal(getTargetCoordinates());
-        XYZ curr = getSimplifiedCoordinates(coordinates);
+        XYZ curr = getExactCoordinates(coordinates);
         // at this point, both the goal and where we are are simplified
         if (coordinatesGoal.y >= curr.y) {
             //one block closer
@@ -316,7 +395,7 @@ public class Movement {
     private boolean shouldJumpThere() {
         double y = getTargetCoordinates().y;
         // same y actually means there is a block to jump
-        boolean facingBreathable = blocks.get((String)reader.data.get("Target Block")).breathable;
+        boolean facingBreathable = blocks.get((String)reader.data.get("Targeted Block")).breathable;
         double yDist = y - Math.floor(coordinates.y);
         if (yDist >= 0 && yDist < 1) {
             return !facingBreathable;
@@ -336,15 +415,26 @@ public class Movement {
         double factor = 3;
         return (Math.abs(facingGoal.y - facing.y) < factor);
     }
-    public boolean closeEnough() {
+    public boolean facingCloseEnough() {
         return xCloseEnough() && yCloseEnough();
     }
     // The default accuracy is within .5
     // Ignores y-level
-    private boolean coordinateReached() {
+    public boolean coordinateReached() {
         return coordinateReached(.5);
     }
-    private boolean coordinateReached(double factor) {
+    public boolean blockInRange() {
+        //range is 3 all around
+        double factor = 3;
+        if (Math.abs(targetCoordinates.x - coordinates.x) < factor &&
+                Math.abs(targetCoordinates.z - coordinates.z) < factor &&
+                Math.abs(targetCoordinates.y - coordinates.y + 1) < factor) {
+            return true;
+        } else {
+            return coordinates.equals(targetCoordinates);
+        }
+    }
+    public boolean coordinateReached(double factor) {
         if (Math.abs(coordinatesGoal.x - coordinates.x) < factor &&
             Math.abs(coordinatesGoal.z - coordinates.z) < factor) {
             return true;
@@ -384,7 +474,7 @@ public class Movement {
     /** Simplifies to the exact bottom center of a block
      * that holds the given coordinates */
     public void setCoordinatesGoal(XYZ newGoal) {
-        coordinatesGoal = getSimplifiedCoordinates(newGoal);
+        coordinatesGoal = getExactCoordinates(newGoal);
     }
 
     /** Simplifies to the exact bottom center of a block
@@ -394,14 +484,14 @@ public class Movement {
     }
     /** adds .01 on account of if you are given an integer amount,
      * such as from a target block. **/
-    public XYZ getSimplifiedCoordinates(XYZ coordinate) {
+    public XYZ getExactCoordinates(XYZ coordinate) {
         return new XYZ(
             Math.ceil(coordinate.x + .01) - .5,
                Math.floor(coordinate.y),
             Math.ceil(coordinate.z + .01) - .5);
     }
-    public XYZ getSimplifiedCoordinates() {
-        return getSimplifiedCoordinates(getCoordinates());
+    public XYZ getExactCoordinates() {
+        return getExactCoordinates(getCoordinates());
     }
     public void centerOnBlock() {
         centerOnBlock(.8);
@@ -409,26 +499,45 @@ public class Movement {
     /** Holds shift and gets centered with a certain amount of accuracy.
      * Centers on the coordinatesGoal, not the current block **/
     public void centerOnBlock(double accuracy) {
-        pressKey(SHIFT_KEY);
         double rangeOfMiddle = (1 - accuracy)/2;
-        //setCoordinatesGoal(coordinatesGoal);
-        setCoordinatesGoal(getSimplifiedCoordinates());
+        if(!coordinateReached(rangeOfMiddle * 2)) {
+            pressKey(SHIFT_KEY);
+        }
+        setCoordinatesGoal(getExactCoordinates());
         setDirectionalMovementFromFacing();
         long start = System.currentTimeMillis();
         while(!coordinateReached(rangeOfMiddle)) {
-            releaseAllKeys();
-            pressKey(SHIFT_KEY);
-            if (coordinatesGoal.x > coordinates.x + rangeOfMiddle)
+            if (coordinatesGoal.x > coordinates.x + rangeOfMiddle) {
+                releaseKey(xDown);
                 pressKey(xUp);
-            else if (coordinatesGoal.x < coordinates.x - rangeOfMiddle)
+            }
+            else if (coordinatesGoal.x < coordinates.x - rangeOfMiddle) {
+                releaseKey(xUp);
                 pressKey(xDown);
-            if (coordinatesGoal.z > coordinates.z + rangeOfMiddle)
+            } else {
+                releaseKey(xUp);
+                releaseKey(xDown);
+            }
+            if (coordinatesGoal.z > coordinates.z + rangeOfMiddle) {
+                releaseKey(zDown);
                 pressKey(zUp);
-            else if (coordinatesGoal.z < coordinates.z - rangeOfMiddle)
+            }
+            else if (coordinatesGoal.z < coordinates.z - rangeOfMiddle) {
+                releaseKey(zUp);
                 pressKey(zDown);
+            } else {
+                releaseKey(zUp);
+                releaseKey(zDown);
+            }
+            if(!coordinateReached(rangeOfMiddle + .5) && coordinateReached(rangeOfMiddle + 1)) {
+                releaseKey(SHIFT_KEY);
+            } else {
+                pressKey(SHIFT_KEY);
+            }
             update();
         }
         releaseAllKeys();
+        update();
 
     }
     /** Simply press the forward key if it
@@ -443,15 +552,15 @@ public class Movement {
      * if it isn't already there.
      */
     public void pressKey(int keyValue) {
-        Utils.p("Pressing " + keyValue);
+        //Utils.p("Pressing " + keyValue);
         if(!keyStack.contains(keyValue)) {
-            Utils.p(" pressing successful");
+            //Utils.p(" pressing successful");
             input.keyPress(keyValue);
             keyStack.add(keyValue);
-            Utils.p(" current stack: " + keyStack.toString());
+            //Utils.p(" current stack: " + keyStack.toString());
         }
         else {
-            Utils.p(" pressing failed");
+            //Utils.p(" pressing failed");
         }
     }
 
@@ -468,10 +577,9 @@ public class Movement {
      * Releases all keys stored to the keyStack
      */
     public void releaseAllKeys() {
-        Utils.p("releasing ALL\n current stack: " + keyStack.toString());
+        //Utils.p("releasing ALL\n current stack: " + keyStack.toString());
         while(!keyStack.isEmpty()) {
             releaseKey(keyStack.pop());
-            Utils.sleepOneFrame();
         }
         input.keyRelease(BACKWARD_KEY);
         input.keyRelease(SHIFT_KEY);
@@ -537,17 +645,13 @@ public class Movement {
         input.keyPress(inputEvent);
         Utils.sleepTwoFrames();
         input.keyRelease(inputEvent);
+        Utils.sleepOneFrame();
     }
     public void releaseKey(int inputEvent){
-        Utils.p("Removing " + inputEvent);
-        Utils.p(" current stack: " + keyStack.toString());
         if (keyStack.contains(inputEvent)) {
-            Utils.p(" Removing " + inputEvent);
             keyStack.removeElement(inputEvent);
             input.keyRelease(inputEvent);
-            Utils.sleepTwoFrames();
-        } else {
-            Utils.p(" Removal FAILED");
+            Utils.sleepOneFrame();
         }
     }
 

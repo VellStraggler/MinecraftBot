@@ -6,6 +6,7 @@ import org.mcbot.datatypes.XY;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -65,7 +66,7 @@ public class Utils {
     }
     /** It's actually 2**/
     public static void sleepOneFrame() {
-        sleep(1000/60);
+        sleep(1000/45);
     }
     public static void sleepTwoFrames() {
         sleepOneFrame();
@@ -83,6 +84,43 @@ public class Utils {
             input.keyPress(inputEvent);
             sleepTwoFrames();
             input.keyRelease(inputEvent);
+        } catch (AWTException ignored) {}
+    }
+    public static void type(String s) {
+        try {
+            Robot input = new Robot();
+            sleepTwoFrames();
+            input.keyPress(KeyEvent.VK_T);
+            sleepTwoFrames();
+            input.keyRelease(KeyEvent.VK_T);
+            for(char c: s.toCharArray()) {
+                int key = c;
+                boolean cap = false;
+                if(c >= 'A' && c <= 'Z') {
+                    cap = true;
+                    sleepTwoFrames();
+                    input.keyPress(KeyEvent.VK_SHIFT);
+                } else if(c >= 'a' && c <= 'z'){
+                    key = c - 32;
+                } else if (c == '.') {
+                    key = KeyEvent.VK_PERIOD;
+                } else if (c == ':') {
+                    key = KeyEvent.VK_COLON;
+                } else {
+                    // unknown characters become a space.
+                    key = KeyEvent.VK_SPACE;
+                }
+                sleepTwoFrames();
+                input.keyPress(key);
+                sleepTwoFrames();
+                input.keyRelease(key);
+                if (cap) {
+                    sleepTwoFrames();
+                    input.keyRelease(KeyEvent.VK_SHIFT);
+                }
+            }
+            input.keyPress(KeyEvent.VK_ENTER);
+            sleep(200);
         } catch (AWTException ignored) {}
     }
     /** This only applies to X and Z coordinates!! **/

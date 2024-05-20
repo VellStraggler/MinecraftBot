@@ -13,13 +13,13 @@ public class F3Data {
     // Makes it easy to add other data if you want to
     // TODO: currently all dataHeadings must have different first letters.
     // This data does not need to be in order
-    public static String[] leftDataHeadings = new String[]{"XYZ", "Facing", "Local Difficulty"};
-    //                                                             ^         day, ignore difficulty
-    //                                                             direction and facing
     public static Character[] leftFirstChars = new Character[]{'X', 'F', 'L'};
-    public static String[] rightDataHeadings = new String[]{"Targeted", "minecraft"};
-    //                                                                   block type
+    public static String[] leftDataHeadings = new String[]    {"XYZ", "Facing", "Local Difficulty"};
+    //                                                                  ^         ^ day, ignore difficulty
+    //                                                                  direction and facing
     public static Character[] rightFirstChars = new Character[]{'T', 'm'};
+    public static String[] rightDataHeadings = new String[]    {"Targeted Block", "minecraft"};
+    //                                                                             block type
     private Map<String, Object> data;
 
     public F3Data(Map<String, Object> data) {

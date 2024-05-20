@@ -26,9 +26,16 @@ public class App {
 
         // Do what you want
         Utils.beep();
-//        mining.mineSquareArea(5);
-        building.bridge(16,true);
-        building.bridge(8,false);
+        long end = System.currentTimeMillis() + 60000;
+        while (System.currentTimeMillis() < end) {
+            movement.wanderStep();
+//            String important = movement.getReader().PrintWholeScreenContents();
+            Block block = movement.getTargetBlock();
+            if (!block.probablyPlaced && movement.getSurface() != Surface.FLOOR) {
+                mining.mineWalkingSpace();
+                movement.turnRandom();
+            }
+        }
         Utils.beep();
     }
 }

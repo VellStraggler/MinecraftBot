@@ -28,7 +28,7 @@ public class Building {
         mvt.setYFacingGoal(BRIDGING_DEGREE);
 //        mvt.turnAround();
         mvt.centerOnBlock();
-        mvt.faceDirectionGoal();
+        mvt.faceFacingGoal();
 
         if(!fast) {
             mvt.pressKey(Movement.SHIFT_KEY);
@@ -37,15 +37,15 @@ public class Building {
         }
         mvt.pressKey(Movement.BACKWARD_KEY);
         int placed = 0;
-        XYZ startCoords = mvt.getSimplifiedCoordinates();
-        XYZ newCoords = mvt.getSimplifiedCoordinates();
+        XYZ startCoords = mvt.getExactCoordinates();
+        XYZ newCoords = mvt.getExactCoordinates();
         while(placed <= amt) {
             mvt.rightClickHere();
             mvt.update();
-            newCoords = mvt.getSimplifiedCoordinates();
+            newCoords = mvt.getExactCoordinates();
             if (!newCoords.equals(startCoords)) {
                 placed++;
-                startCoords = mvt.getSimplifiedCoordinates();
+                startCoords = mvt.getExactCoordinates();
             }
         }
         mvt.update(); // redundancy
