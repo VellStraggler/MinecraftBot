@@ -169,11 +169,16 @@ public class Movement {
     public Surface getSurface() {
         return surface;
     }
-    public void turnRandom() {
+    public void faceRandomDirection() {
         double ran = Math.random();
         if (ran >= .75) turnRight();
         else if (ran >= .5) turnLeft();
         else if (ran >= .25) turnAround();
+    }
+    public void turnRandom(){
+        double ran = Math.random();
+        if (ran >= .5) turnRight();
+        else turnLeft();
     }
     public void turnLeft(){
         facingGoal.x = (getGeneralFacingNum() - 90);
@@ -484,7 +489,7 @@ public class Movement {
     }
     /** adds .01 on account of if you are given an integer amount,
      * such as from a target block. **/
-    public XYZ getExactCoordinates(XYZ coordinate) {
+    public static XYZ getExactCoordinates(XYZ coordinate) {
         return new XYZ(
             Math.ceil(coordinate.x + .01) - .5,
                Math.floor(coordinate.y),

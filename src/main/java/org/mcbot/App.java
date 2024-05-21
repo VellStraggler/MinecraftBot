@@ -1,9 +1,7 @@
 package org.mcbot;
 
 import org.mcbot.datatypes.*;
-import org.mcbot.datatypes.containers.Inventory;
 import org.mcbot.datatypes.containers.Items;
-import org.mcbot.datatypes.containers.Slot;
 import org.mcbot.skills.*;
 import org.mcbot.wordwork.F3DataReader;
 
@@ -16,26 +14,29 @@ public class App {
         Blocks blocks = new Blocks(items);
         F3DataReader dataReader = new F3DataReader();
         dataReader.readScreen();
-        Movement movement = new Movement(blocks, dataReader);
-        //Inventory inventory = new Inventory(items, movement);
+        Movement mvt = new Movement(blocks, dataReader);
+        //Inventory inventory = new Inventory(items, mvt);
         //inventory.readContents();
         // Initialize Task Types
-        Mining mining = new Mining(movement);
-        Building building = new Building(movement);
-        //Farming farming = new Farming(movement);
+        Mining mining = new Mining(mvt);
+        Building building = new Building(mvt);
+        //Farming farming = new Farming(mvt);
 
         // Do what you want
         Utils.beep();
         long end = System.currentTimeMillis() + 60000;
+        Walkables walks = new Walkables();
+        walks.addXYZ(mvt.getCoordinates());
         while (System.currentTimeMillis() < end) {
-            movement.wanderStep();
-//            String important = movement.getReader().PrintWholeScreenContents();
-            Block block = movement.getTargetBlock();
-            if (!block.probablyPlaced && movement.getSurface() != Surface.FLOOR) {
+            mvt.wanderStep();
+            walks.addXYZ(mvt.getCoordinates());
+            Block block = mvt.getTargetBlock();
+            if (!block.probablyPlaced && mvt.getSurface() != Surface.FLOOR) {
                 mining.mineWalkingSpace();
-                movement.turnRandom();
+                mvt.turnRandom();
             }
         }
         Utils.beep();
+        Utils.p(walks.toString());
     }
 }

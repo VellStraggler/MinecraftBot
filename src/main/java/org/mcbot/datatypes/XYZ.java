@@ -27,6 +27,13 @@ public class XYZ extends XY{
         return (other.x == this.x && other.y == this.y && other.z == this.z);
     }
 
+    /** This change is specific to Minecraft coordinates**/
+    public static Integer toIntXOrZ(double xOrZ) {
+        return (int)(Math.ceil(xOrZ + .01) - .5);
+    }
+    public static Integer toIntY(double y) {
+        return (int)Math.floor(y);
+    }
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
